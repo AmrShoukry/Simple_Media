@@ -1,7 +1,10 @@
 const express = require("express");
-const authRouter = require("./routes/authRoutes");
 const { json } = require("body-parser");
+const multer = require("multer");
 const errorsController = require("./controllers/errorsController");
+const authRouter = require("./routes/authRoutes");
+
+const upload = multer();
 
 const app = express();
 
