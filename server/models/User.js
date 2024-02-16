@@ -13,6 +13,14 @@ const userSchema = new Schema({
     required: [true, "Last Name is required"],
     minLength: [2, "First Name can't be less than 2 characters"],
   },
+  username: {
+    type: String,
+    required: [true, "Username is required"],
+    match: [
+      /^[a-z0-9]+$/,
+      "Username must contain lowercase characters and numbers only",
+    ],
+  },
   email: {
     type: String,
     required: [true, "Email is required"],
