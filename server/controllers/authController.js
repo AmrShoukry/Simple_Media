@@ -3,6 +3,16 @@ const User = require("../models/User");
 const { compare } = require("bcrypt");
 const { upload } = require("../utils/uploadImage");
 const sharp = require("sharp");
+const jwt = require("jsonwebtoken");
+
+function signToken(userId) {
+  const payload = { userId };
+  const secretKey = process.env.SECRET_KEY;
+  const options = {
+    expiresIn: "30d",
+  };
+  return jwt.sign(payload, secretKey, options);
+}
 
 exports.handleLogin = catchAsync(async (req, res, next) => {
   if (!req.body.email || !req.body.password) {
@@ -14,8 +24,16 @@ exports.handleLogin = catchAsync(async (req, res, next) => {
   );
 
   if (user && (await compare(req.body.password, user.password))) {
+    const token = signToken(user._id);
+    res.cookie("jwt", token, {
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+      secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+    });
+
     return res.status(200).json({
       status: "success",
+      token: token,
     });
   }
 
