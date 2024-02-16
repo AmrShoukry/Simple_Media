@@ -24,6 +24,7 @@ const userSchema = new Schema({
     type: String,
     required: [true, "Password is required"],
     minLength: [6, "Password must be at least 6 characters"],
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -34,9 +35,11 @@ const userSchema = new Schema({
       },
       message: "Password Confirm doesn't match the entered password",
     },
+    select: false,
   },
   profilePicture: {
     type: String,
+    default: "default.jpeg",
   },
   followers: [
     {
@@ -62,6 +65,25 @@ const userSchema = new Schema({
       ref: "Post",
     },
   ],
+  active: {
+    type: Boolean,
+    default: true,
+    set: function (value) {
+      if (!this.active) {
+        return value;
+      }
+    },
+  },
+  craetedAt: {
+    type: Date,
+    default: Date.now,
+    immutable: true,
+  },
+  passwordLastModifiedAt: {
+    type: Date,
+    default: null,
+    select: false,
+  },
 });
 
 userSchema.pre("save", async function (next) {
