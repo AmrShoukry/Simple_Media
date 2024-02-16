@@ -75,13 +75,12 @@ const userSchema = new Schema({
     },
   ],
   active: {
-    type: Boolean,
-    default: true,
-    set: function (value) {
-      if (!this.active) {
-        return value;
-      }
-    },
+    type: String,
+    enum: ["active", "holding", "deactivated"],
+    default: "holding",
+  },
+  token: {
+    type: String,
   },
   craetedAt: {
     type: Date,

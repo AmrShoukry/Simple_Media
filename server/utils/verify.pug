@@ -1,0 +1,10 @@
+doctype html
+html
+  head
+    title Email Verification
+  body
+    h1 Verify Your Email
+    p Dear #{firstName}, please click the button below to verify your email address:
+    form(action=`${url}`, method="GET")
+      input(type="hidden" name="token" value=token)
+      button(type="submit") Verify Email
