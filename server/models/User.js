@@ -16,6 +16,7 @@ const userSchema = new Schema({
   username: {
     type: String,
     required: [true, "Username is required"],
+    unique: [true, "This username already exists"],
     match: [
       /^[a-z0-9]+$/,
       "Username must contain lowercase characters and numbers only",
