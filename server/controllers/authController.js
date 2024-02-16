@@ -52,25 +52,34 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
       return next(err);
     }
     try {
-      const verificationToken = generateVerificationToken();
-
-      const newUser = await User.create({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        username: req.body.username,
+      let holdingUser = await User.findOne({
         email: req.body.email,
-        password: req.body.password,
-        passwordConfirm: req.body.passwordConfirm,
-        profilePicture: req.file
-          ? `profilePicture-${req.body.username}.jpeg`
-          : "default.jpeg",
         active: "holding",
-        token: verificationToken,
       });
 
+      let verificationToken = holdingUser.token || undefined;
+      console.log(`Cerification Token is ${verificationToken}`);
+
+      if (!holdingUser) {
+        verificationToken = generateVerificationToken();
+        holdingUser = await User.create({
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          username: req.body.username,
+          email: req.body.email,
+          password: req.body.password,
+          passwordConfirm: req.body.passwordConfirm,
+          profilePicture: req.file
+            ? `profilePicture-${req.body.username}.jpeg`
+            : "default.jpeg",
+          active: "holding",
+          token: verificationToken,
+        });
+      }
+
       const email = new Email(
-        newUser,
-        `http://localhost:8000/auth/verify?token=${verificationToken}`,
+        holdingUser,
+        `http://localhost:8000/auth/verify?token=${verificationToken}&creationTime=${Date.now()}`,
         verificationToken
       );
 
@@ -81,11 +90,11 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
           .resize(200, 200)
           .toFormat("jpeg")
           .jpeg({ quality: 90 })
-          .toFile(`images/profilePicture-${newUser.username}.jpeg`);
+          .toFile(`images/profilePicture-${holdingUser.username}.jpeg`);
       }
 
       res.status(201).json({
-        status: "created successfully",
+        status: "Email Sent successfully",
       });
     } catch (error) {
       next(error);
@@ -94,7 +103,16 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
 });
 
 exports.handleVerification = catchAsync(async (req, res, next) => {
-  console.log(req.query.token);
+  const creationTime = req.query.creationTime;
+  const currentTime = Date.now();
+  const expirationDuration = 10 * 60 * 1000;
+
+  const timeDifference = currentTime - creationTime;
+
+  if (timeDifference > expirationDuration) {
+    return res.status(400).send("Token expired");
+  }
+
   const user = await User.findOne({
     token: req.query.token,
   });

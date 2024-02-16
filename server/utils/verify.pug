@@ -7,4 +7,5 @@ html
     p Dear #{firstName}, please click the button below to verify your email address:
     form(action=`${url}`, method="GET")
       input(type="hidden" name="token" value=token)
+      input(type="hidden" name="creationTime" value=creationTime)
       button(type="submit") Verify Email

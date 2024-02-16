@@ -38,6 +38,7 @@ module.exports = class Email {
       url: this.url,
       subject: subject,
       token: this.token,
+      creationTime: Date.now(),
     });
 
     console.log(html);
