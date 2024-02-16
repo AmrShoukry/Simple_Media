@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const { Schema, model } = require("mongoose");
 const validator = require("validator");
+const { hash } = require("bcrypt");
 
 const userSchema = new Schema({
   firstName: {
@@ -63,3 +63,16 @@ const userSchema = new Schema({
     },
   ],
 });
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  this.password = await hash(this.password, 10);
+  this.passwordConfirm = this.password;
+
+  next();
+});
+
+const User = model("User", userSchema);
+
+model.exports = User;
