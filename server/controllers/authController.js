@@ -22,22 +22,44 @@ function signToken(userId) {
   return jwt.sign(payload, secretKey, options);
 }
 
-exports.handleLogin = catchAsync(async (req, res, next) => {
-  if (!req.body.email || !req.body.password) {
-    return next("Incorrect credentials");
+function signCookie(req, res, token, expirationDuration) {
+  res.cookie("jwt", token, {
+    expires: new Date(expirationDuration),
+    httpOnly: true,
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+  });
+}
+
+function checkTokenValidity(req, verificationToken) {
+  if (!verificationToken) {
+    return "DEFINED=Invalid-Token 400";
   }
 
-  const user = await User.findOne({ email: req.body.email }).select(
-    "+password"
-  );
+  const creationTime = req.body.creationTime;
+  const currentTime = Date.now();
+  const expirationDuration = 10 * 60 * 1000;
+  const timeDifference = currentTime - creationTime;
+
+  if (timeDifference > expirationDuration) {
+    return "DEFINED=Token-Expired 400";
+  }
+
+  return true;
+}
+
+exports.handleLogin = catchAsync(async (req, res, next) => {
+  if (!req.body.email || !req.body.password) {
+    return next("DEFINED=Incorrect-credentials 400");
+  }
+
+  const user = await User.findOne({
+    active: "active",
+    email: req.body.email,
+  }).select("+password");
 
   if (user && (await compare(req.body.password, user.password))) {
     const token = signToken(user._id);
-    res.cookie("jwt", token, {
-      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
-      secure: req.secure || req.headers["x-forwarded-proto"] === "https",
-    });
+    signCookie(req, res, token, Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     return res.status(200).json({
       status: "success",
@@ -45,22 +67,21 @@ exports.handleLogin = catchAsync(async (req, res, next) => {
     });
   }
 
-  return next("Incorrect credentials");
+  return next("DEFINED=Incorrect-Credentials 400");
 });
 
 exports.handleSignup = catchAsync(async (req, res, next) => {
   upload.single("profilePicture")(req, res, async function (err) {
-    if (err) {
-      return next(err);
-    }
     try {
+      if (err) {
+        return next(err);
+      }
       let holdingUser = await User.findOne({
         email: req.body.email,
         active: "holding",
       });
 
       let verificationToken = holdingUser?.token || undefined;
-      console.log(`Cerification Token is ${verificationToken}`);
 
       if (!holdingUser) {
         verificationToken = generateVerificationToken();
@@ -81,7 +102,7 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
 
       const email = new Email(
         holdingUser,
-        `http://localhost:8000/auth/verify?token=${verificationToken}&creationTime=${Date.now()}`,
+        `http://localhost:8000/auth/verify`,
         verificationToken
       );
 
@@ -98,48 +119,27 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
       res.status(201).json({
         status: "Email Sent successfully",
       });
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      return next(err);
     }
   });
 });
 
-exports.handleVerification = catchAsync(async (req, res, next) => {
-  const verificationToken = req.query.token;
-
-  if (!verificationToken) {
-    return res.status(400).json({
-      status: "error",
-      message: "Invalid token",
-    });
-  }
-
-  const creationTime = req.query.creationTime;
-  const currentTime = Date.now();
-  const expirationDuration = 10 * 60 * 1000;
-  const timeDifference = currentTime - creationTime;
-
-  if (timeDifference > expirationDuration) {
-    return res.status(400).send("Token expired");
+exports.handleAccountVerification = catchAsync(async (req, res, next) => {
+  const verificationToken = req.body.token;
+  const tokenValidity = checkTokenValidity(req, verificationToken);
+  if (tokenValidity !== true) {
+    return next(tokenValidity);
   }
 
   const user = await User.findOne({
     token: verificationToken,
   });
 
-  console.log(user);
-
   if (user) {
     user.active = "active";
     user.token = null;
     await user.save();
-
-    // const token = signToken(user._id);
-    // res.cookie("jwt", token, {
-    //   expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-    //   httpOnly: true,
-    //   secure: req.secure || req.headers["x-forwarded-proto"] === "https",
-    // });
 
     return res.status(200).json({
       status: "success",
@@ -147,10 +147,7 @@ exports.handleVerification = catchAsync(async (req, res, next) => {
     });
   }
 
-  return res.status(400).json({
-    status: "error",
-    message: "Invalid token",
-  });
+  return next("DEFINED=Invalid-Token 400");
 });
 
 exports.handleForgetPassword = catchAsync(async (req, res, next) => {
@@ -158,10 +155,7 @@ exports.handleForgetPassword = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ active: "active", email: useremail });
 
   if (!user) {
-    return res.status(401).json({
-      status: "error",
-      message: "This email doesn't exist",
-    });
+    return next("DEFINED=This-email-doesn't-exist 401");
   }
 
   const verificationToken = generateVerificationToken();
@@ -172,7 +166,7 @@ exports.handleForgetPassword = catchAsync(async (req, res, next) => {
 
   const email = new Email(
     user,
-    `http://localhost:8000/auth/reset?token=${verificationToken}&creationTime=${Date.now()}`,
+    `http://localhost:8000/auth/resetPassword}`,
     verificationToken
   );
 
@@ -185,23 +179,10 @@ exports.handleForgetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.handleResetPassword = catchAsync(async (req, res, next) => {
-  const verificationToken = req.query.token;
-  const creationTime = req.query.creationTime;
-  const currentTime = Date.now();
-
-  const password = req.body.password;
-  const passwordConfirm = req.body.passwordConfirm;
-
-  console.log(passwordConfirm);
-  console.log(password);
-  console.log("4");
-
-  const expirationDuration = 10 * 60 * 1000;
-
-  const timeDifference = currentTime - creationTime;
-
-  if (timeDifference > expirationDuration) {
-    return res.status(400).send("Token expired");
+  const verificationToken = req.body.token;
+  const tokenValidity = checkTokenValidity(req, verificationToken);
+  if (tokenValidity !== true) {
+    return next(tokenValidity);
   }
 
   const user = await User.findOne({
@@ -209,21 +190,23 @@ exports.handleResetPassword = catchAsync(async (req, res, next) => {
     token: verificationToken,
   });
 
+  const password = req.body.password;
+  const passwordConfirm = req.body.passwordConfirm;
+
   user.password = password;
   user.passwordConfirm = passwordConfirm;
   user.token = null;
 
-  console.log(user);
-
   await user.save();
+
+  return res.status(200).json({
+    status: "success",
+    message: "password changed succsessfully",
+  });
 });
 
 exports.handleLogout = catchAsync(async (req, res, next) => {
-  res.cookie("jwt", "", {
-    expires: new Date(Date.now() + 1 * 1000),
-    httpOnly: true,
-    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
-  });
+  signCookie(req, res, "", Date.now() + 1 * 1000);
 
   return res.status(200).json({
     status: "success",
@@ -236,9 +219,14 @@ exports.handleRequestUpdateEmail = catchAsync(async (req, res, next) => {
   const newEmail = req.body.newEmail;
 
   if (!validator.isEmail(newEmail)) {
-    return res
-      .status(400)
-      .json({ status: "error", message: "Invalid email address" });
+    return next("DEFINED=Invalid-Email-Address 400");
+  }
+
+  const existingUser = await User.findOne({ email: newEmail });
+  if (existingUser) {
+    return next(
+      "DEFINED=This-New-Email-Already-Exists-In-Our-Database-Please-Use-Another-One 400"
+    );
   }
 
   const user = await User.findOne({ active: "active", email: emailuser });
@@ -250,33 +238,28 @@ exports.handleRequestUpdateEmail = catchAsync(async (req, res, next) => {
 
   const email = new Email(
     user,
-    `http://localhost:8000/auth/verifyEmail?token=${verificationToken}&creationTime=${Date.now()}`,
+    `http://localhost:8000/auth/verifyEmail`,
     verificationToken,
     newEmail
   );
 
   email.send("email", "Change Email");
+
+  res.status(200).json({
+    status: "success",
+    message: `Email sent successfully to ${newEmail} to verify it`,
+  });
 });
 
 exports.handleVerifyEmail = catchAsync(async (req, res, next) => {
   const verificationToken = req.body.token;
-  const creationTime = req.body.creationTime;
-  const currentTime = Date.now();
+  const tokenValidity = checkTokenValidity(req, verificationToken);
+  if (tokenValidity !== true) {
+    return next(tokenValidity);
+  }
 
-  console.log(req.body);
-
-  console.log();
   const email = req.body.email;
   const newEmail = req.body.newEmail;
-  console.log(newEmail);
-
-  const expirationDuration = 10 * 60 * 1000;
-
-  const timeDifference = currentTime - creationTime;
-
-  if (timeDifference > expirationDuration) {
-    return res.status(400).send("Token expired");
-  }
 
   const user = await User.findOne({ email: email, token: verificationToken });
 
@@ -284,42 +267,43 @@ exports.handleVerifyEmail = catchAsync(async (req, res, next) => {
   user.token = null;
 
   await user.save();
+
+  res.status(200).json({
+    status: "success",
+    message: `Email updated successfully from ${email} to ${newEmail}`,
+  });
 });
 
 exports.checkLogin = catchAsync(async (req, res, next) => {
-  try {
-    let token;
+  let token;
 
-    if (req.cookies?.jwt) {
-      token = req.cookies.jwt;
-    } else if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
-    ) {
-      token = req.headers.authorization.split(" ")[1];
-    }
-
-    console.log(token);
-
-    if (!token) {
-      return next("You have to login first");
-    }
-
-    const userDecoded = await promisify(jwt.verify)(
-      token,
-      process.env.SECRET_KEY
-    );
-
-    const user = await User.findById(userDecoded.userId);
-
-    if (!user) {
-      return next("Invalid token please login again");
-    }
-
-    req.user = user;
-
-    next();
-  } catch (err) {
-    console.log(err);
+  if (req.cookies?.jwt) {
+    token = req.cookies.jwt;
+  } else if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
   }
+
+  console.log(token);
+
+  if (!token) {
+    return next("DEFINED=You-have-to-login-first 401");
+  }
+
+  const userDecoded = await promisify(jwt.verify)(
+    token,
+    process.env.SECRET_KEY
+  );
+
+  const user = await User.findById(userDecoded.userId);
+
+  if (!user) {
+    return next("DEFINED=Invalid-token-please-login-again 401");
+  }
+
+  req.user = user;
+
+  next();
 });

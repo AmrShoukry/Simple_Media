@@ -2,7 +2,7 @@ const { Router } = require("express");
 const {
   handleLogin,
   handleSignup,
-  handleVerification,
+  handleAccountVerification,
   handleForgetPassword,
   handleResetPassword,
   handleLogout,
@@ -15,9 +15,9 @@ const authRouter = Router();
 
 authRouter.route("/login").post(handleLogin);
 authRouter.route("/signup").post(handleSignup);
-authRouter.route("/verify").get(handleVerification);
+authRouter.route("/verify").post(handleAccountVerification);
 authRouter.route("/forgetPassword").post(handleForgetPassword);
-authRouter.route("/resetPassword").post(handleResetPassword);
+authRouter.route("/resetPassword").post(handleResetPassword, handleLogout);
 authRouter.route("/logout").get(handleLogout);
 authRouter
   .route("/requestUpdateEmail")
