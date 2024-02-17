@@ -57,7 +57,7 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
         active: "holding",
       });
 
-      let verificationToken = holdingUser.token || undefined;
+      let verificationToken = holdingUser?.token || undefined;
       console.log(`Cerification Token is ${verificationToken}`);
 
       if (!holdingUser) {
@@ -103,10 +103,18 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
 });
 
 exports.handleVerification = catchAsync(async (req, res, next) => {
+  const verificationToken = req.query.token;
+
+  if (!verificationToken) {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid token",
+    });
+  }
+
   const creationTime = req.query.creationTime;
   const currentTime = Date.now();
   const expirationDuration = 10 * 60 * 1000;
-
   const timeDifference = currentTime - creationTime;
 
   if (timeDifference > expirationDuration) {
@@ -114,8 +122,10 @@ exports.handleVerification = catchAsync(async (req, res, next) => {
   }
 
   const user = await User.findOne({
-    token: req.query.token,
+    token: verificationToken,
   });
+
+  console.log(user);
 
   if (user) {
     user.active = "active";
@@ -138,5 +148,83 @@ exports.handleVerification = catchAsync(async (req, res, next) => {
   return res.status(400).json({
     status: "error",
     message: "Invalid token",
+  });
+});
+
+exports.handleForgetPassword = catchAsync(async (req, res, next) => {
+  const useremail = req.body.email;
+  const user = await User.findOne({ active: "active", email: useremail });
+
+  if (!user) {
+    return res.status(401).json({
+      status: "error",
+      message: "This email doesn't exist",
+    });
+  }
+
+  const verificationToken = generateVerificationToken();
+
+  user.token = verificationToken;
+
+  await user.save();
+
+  const email = new Email(
+    user,
+    `http://localhost:8000/auth/reset?token=${verificationToken}&creationTime=${Date.now()}`,
+    verificationToken
+  );
+
+  email.send("change", "Change Password");
+
+  res.status(200).json({
+    status: "successfull",
+    message: "email sent successfully to change password",
+  });
+});
+
+exports.handleResetPassword = catchAsync(async (req, res, next) => {
+  const verificationToken = req.query.token;
+  const creationTime = req.query.creationTime;
+  const currentTime = Date.now();
+
+  const password = req.body.password;
+  const passwordConfirm = req.body.passwordConfirm;
+
+  console.log(passwordConfirm);
+  console.log(password);
+  console.log("4");
+
+  const expirationDuration = 10 * 60 * 1000;
+
+  const timeDifference = currentTime - creationTime;
+
+  if (timeDifference > expirationDuration) {
+    return res.status(400).send("Token expired");
+  }
+
+  const user = await User.findOne({
+    active: "active",
+    token: verificationToken,
+  });
+
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  user.token = null;
+
+  console.log(user);
+
+  await user.save();
+});
+
+exports.handleLogout = catchAsync(async (req, res, next) => {
+  res.cookie("jwt", "", {
+    expires: new Date(Date.now() + 1 * 1000),
+    httpOnly: true,
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+  });
+
+  return res.status(200).json({
+    status: "success",
+    message: "logged out successfully",
   });
 });

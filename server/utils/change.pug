@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    title Change Password
+  body
+    h1 Change Your Password
+    p Dear #{firstName}, please click the button below to change your password:
+    form(action=`${url}`, method="GET")
+      input(type="hidden" name="token" value=token)
+      input(type="hidden" name="creationTime" value=creationTime)
+      button(type="submit") Change Password -won't work properly

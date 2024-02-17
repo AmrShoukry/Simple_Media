@@ -40,6 +40,10 @@ const userSchema = new Schema({
     required: [true, "Password Confirm is required"],
     validate: {
       validator: function (passwordConfirm) {
+        if (this.password === undefined) {
+          this.password = passwordConfirm;
+        }
+        console.log(this.password);
         return this.password === passwordConfirm;
       },
       message: "Password Confirm doesn't match the entered password",
@@ -95,6 +99,7 @@ const userSchema = new Schema({
 });
 
 userSchema.pre("save", async function (next) {
+  console.log("aho");
   if (!this.isModified("password")) return next();
 
   this.password = await hash(this.password, 10);
