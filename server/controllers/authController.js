@@ -6,6 +6,8 @@ const sharp = require("sharp");
 const jwt = require("jsonwebtoken");
 const Email = require("../utils/email");
 const crypto = require("crypto");
+const validator = require("validator");
+const { promisify } = require("util");
 
 function generateVerificationToken() {
   return crypto.randomBytes(20).toString("hex");
@@ -227,4 +229,97 @@ exports.handleLogout = catchAsync(async (req, res, next) => {
     status: "success",
     message: "logged out successfully",
   });
+});
+
+exports.handleRequestUpdateEmail = catchAsync(async (req, res, next) => {
+  const emailuser = req.user.email;
+  const newEmail = req.body.newEmail;
+
+  if (!validator.isEmail(newEmail)) {
+    return res
+      .status(400)
+      .json({ status: "error", message: "Invalid email address" });
+  }
+
+  const user = await User.findOne({ active: "active", email: emailuser });
+  const verificationToken = generateVerificationToken();
+
+  user.token = verificationToken;
+
+  user.save();
+
+  const email = new Email(
+    user,
+    `http://localhost:8000/auth/verifyEmail?token=${verificationToken}&creationTime=${Date.now()}`,
+    verificationToken,
+    newEmail
+  );
+
+  email.send("email", "Change Email");
+});
+
+exports.handleVerifyEmail = catchAsync(async (req, res, next) => {
+  const verificationToken = req.body.token;
+  const creationTime = req.body.creationTime;
+  const currentTime = Date.now();
+
+  console.log(req.body);
+
+  console.log();
+  const email = req.body.email;
+  const newEmail = req.body.newEmail;
+  console.log(newEmail);
+
+  const expirationDuration = 10 * 60 * 1000;
+
+  const timeDifference = currentTime - creationTime;
+
+  if (timeDifference > expirationDuration) {
+    return res.status(400).send("Token expired");
+  }
+
+  const user = await User.findOne({ email: email, token: verificationToken });
+
+  user.email = newEmail;
+  user.token = null;
+
+  await user.save();
+});
+
+exports.checkLogin = catchAsync(async (req, res, next) => {
+  try {
+    let token;
+
+    if (req.cookies?.jwt) {
+      token = req.cookies.jwt;
+    } else if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    console.log(token);
+
+    if (!token) {
+      return next("You have to login first");
+    }
+
+    const userDecoded = await promisify(jwt.verify)(
+      token,
+      process.env.SECRET_KEY
+    );
+
+    const user = await User.findById(userDecoded.userId);
+
+    if (!user) {
+      return next("Invalid token please login again");
+    }
+
+    req.user = user;
+
+    next();
+  } catch (err) {
+    console.log(err);
+  }
 });

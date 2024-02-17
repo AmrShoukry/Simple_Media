@@ -1,0 +1,14 @@
+doctype html
+html
+  head
+    title Verify New Email
+  body
+    h1 Verify Your Email
+    p Dear #{firstName}, please click the button below to Verify your new Email:
+    form(action=`${url}`, method="POST")
+      input(type="hidden" name="token" value=token)
+      input(type="hidden" name="creationTime" value=creationTime)
+      input(type="hidden" name="email" value=email)
+      input(type="hidden" name="newEmail" value=newEmail)
+
+      button(type="submit") Verify Email

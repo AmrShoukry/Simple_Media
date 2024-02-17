@@ -1,11 +1,13 @@
 const express = require("express");
-const { json } = require("body-parser");
+const { json, urlencoded } = require("body-parser");
 const errorsController = require("./controllers/errorsController");
 const authRouter = require("./routes/authRoutes");
 
 const app = express();
 
 app.use(json());
+app.use(urlencoded({ extended: false }));
+
 app.use("/auth", authRouter);
 
 app.use("*", (req, res, next) => {

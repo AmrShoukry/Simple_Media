@@ -3,12 +3,14 @@ const pug = require("pug");
 const { htmlToText } = require("html-to-text");
 
 module.exports = class Email {
-  constructor(user, url, token = null) {
-    this.to = user.email;
+  constructor(user, url, token = null, newEmail = null) {
+    this.to = newEmail || user.email;
     this.firstName = user.firstName;
     this.url = url;
     this.from = `Simple Media <${process.env.EMAIL_FROM}>`;
     this.token = token;
+    this.email = user.email;
+    this.newEmail = newEmail || " ";
   }
 
   createTransport() {
@@ -39,6 +41,8 @@ module.exports = class Email {
       subject: subject,
       token: this.token,
       creationTime: Date.now(),
+      email: this.email,
+      newEmail: this.newEmail,
     });
 
     console.log(html);
