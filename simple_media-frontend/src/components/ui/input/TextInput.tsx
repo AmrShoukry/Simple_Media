@@ -33,8 +33,8 @@ const TextInput: React.FC<Props> = (props) => {
 
   return (
     <>
-      <label className='capitalize' htmlFor={inputId}>{ label }</label>
-      <div className="input">
+      <label className='capitalize mb-3 block' htmlFor={inputId}>{ label }</label>
+      <div className="input focus-within:border-pry focus-within:border focus:border-solid">
       { hidePassword.type === "password" ?
         <span>
           { hidePassword.showPassword ?
@@ -57,7 +57,7 @@ const TextInput: React.FC<Props> = (props) => {
         id={inputId}
         placeholder={placeholder}
       />
-      <button onClick={togglePassword} className="input__btn">
+      <span role='button' onClick={togglePassword} className="input__btn">
         { hidePassword.type === "password" ?
             <span>
               {
@@ -69,7 +69,7 @@ const TextInput: React.FC<Props> = (props) => {
           :
             ''
         }
-      </button>
+      </span>
       {hidePassword.type === 'text' ? <FaUserAlt /> : null}
       </div>
     </>
