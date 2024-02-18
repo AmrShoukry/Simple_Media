@@ -33,7 +33,6 @@ const userSchema = new Schema({
     type: String,
     required: [true, "Password is required"],
     minLength: [6, "Password must be at least 6 characters"],
-    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -47,7 +46,6 @@ const userSchema = new Schema({
       },
       message: "Password Confirm doesn't match the entered password",
     },
-    select: false,
   },
   profilePicture: {
     type: String,
@@ -90,10 +88,13 @@ const userSchema = new Schema({
     default: Date.now,
     immutable: true,
   },
-  passwordLastModifiedAt: {
+  nameLastModifiedAt: {
     type: Date,
     default: null,
-    select: false,
+  },
+  usernameLastModifiedAt: {
+    type: Date,
+    default: null,
   },
 });
 

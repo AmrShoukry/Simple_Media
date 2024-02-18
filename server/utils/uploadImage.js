@@ -5,7 +5,7 @@ const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb("notImage", false);
+    cb("DEFINED=Not-A-Valid-Image 400", false);
   }
 };
 
