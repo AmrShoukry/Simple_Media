@@ -3,6 +3,7 @@ import './App.css'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import { Demo } from './pages/Demo'
 
 
 
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
       {
         path: '/login',
         element: <Login  />
+      },
+      {
+        path: '/demo',
+        element: <Demo  />
       },
     ]
   }
