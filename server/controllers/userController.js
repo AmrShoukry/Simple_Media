@@ -138,3 +138,15 @@ exports.handleUpdateUserPassword = catchAsync(async (req, res, next) => {
     message: "Password Updated Successfully",
   });
 });
+
+exports.handleDeletion = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  user.active = "deactivated";
+
+  await user.save();
+
+  res.status(204).json({
+    status: "success",
+    message: "deleted successfully",
+  });
+});

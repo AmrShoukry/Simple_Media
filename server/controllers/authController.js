@@ -53,9 +53,14 @@ exports.handleLogin = catchAsync(async (req, res, next) => {
   }
 
   const user = await User.findOne({
-    active: "active",
+    $or: [{ active: "active" }, { active: "deactivated" }],
     email: req.body.email,
   }).select("+password");
+
+  if (user.active === "deactivated") {
+    user.active = "active";
+    await user.save();
+  }
 
   if (user && (await compare(req.body.password, user.password))) {
     const token = signToken(user._id);
