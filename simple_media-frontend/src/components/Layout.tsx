@@ -7,8 +7,10 @@ interface Props {
 
 const Layout: React.FC<Props> = () => {
   return (
-    <main>
-      <Outlet  />
+    <main className='w-full bg-grey1'>
+      <section className='w-[600px] mx-auto bg-white min-h-screen rounded-lg'>
+        <Outlet  />
+      </section>
     </main>
   );
 }
