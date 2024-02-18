@@ -54,8 +54,11 @@ const Home: React.FC<Props> = () => {
             <Link to="#">forget password?</Link>
           </div>
           <div className='mt-10'>
-            <Button btnTitle='Sign in' />
+            <Button btnTitle='Sign In' />
           </div>
+          <p className='text-grey2 text-14 mt-4 text-center'>
+          Don’t have an account? <Link to='#' className='text-pry'>Create an account</Link>
+          </p>
         </form>
       </div>
     </section>
