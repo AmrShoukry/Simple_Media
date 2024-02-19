@@ -15,7 +15,7 @@ const authRouter = Router();
 
 authRouter.route("/login").post(handleLogin);
 authRouter.route("/signup").post(handleSignup);
-authRouter.route("/verify").post(handleAccountVerification);
+authRouter.route("/verifyAccount").post(handleAccountVerification);
 authRouter.route("/forgetPassword").post(handleForgetPassword);
 authRouter.route("/resetPassword").post(handleResetPassword, handleLogout);
 authRouter.route("/logout").get(handleLogout);

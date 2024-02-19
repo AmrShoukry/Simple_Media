@@ -16,6 +16,12 @@ module.exports = (err, req, res, next) => {
       message: message,
     });
   }
+  if (errorString.startsWith("Cast to ObjectId")) {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid Id",
+    });
+  }
   return res.status(400).json({
     status: "error",
     message: err,

@@ -150,3 +150,98 @@ exports.handleDeletion = catchAsync(async (req, res, next) => {
     message: "deleted successfully",
   });
 });
+
+exports.checkUser = catchAsync(async (req, res, next) => {
+  const id = req.body.id;
+
+  const userTwo = await User.findOne({ _id: id });
+
+  if (!userTwo) {
+    return next("DEFINED=This-user-doesn't-exist 400");
+  }
+
+  req.userTwo = userTwo;
+  next();
+});
+
+function deleteFromList(user, userTwo, action, reverseAction) {
+  const index1 = user[action].indexOf(userTwo._id);
+  if (index1 !== -1) {
+    user[action].splice(index1, 1);
+  }
+
+  const index2 = userTwo[reverseAction].indexOf(user._id);
+  if (index2 !== -1) {
+    userTwo[reverseAction].splice(index2, 1);
+  }
+}
+
+async function handleActions(
+  res,
+  req,
+  action,
+  reverseAction,
+  message,
+  Inserting
+) {
+  const user = req.user;
+  const userTwo = req.userTwo;
+
+  if (Inserting) {
+    if (!user[action].includes(userTwo._id)) {
+      user[action].push(userTwo._id);
+    }
+
+    if (!userTwo[reverseAction].includes(user._id)) {
+      userTwo[reverseAction].push(user._id);
+    }
+  } else {
+    deleteFromList(user, userTwo, action, reverseAction);
+  }
+
+  await user.save();
+  await userTwo.save();
+
+  return res.status(200).json({
+    status: "success",
+    message: `${user.firstName} ${message} ${userTwo.firstName} successfully`,
+  });
+}
+
+exports.checkPreBlocking = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  const userTwo = req.userTwo;
+
+  deleteFromList(user, userTwo, "following", "followers");
+  deleteFromList(user, userTwo, "followers", "following");
+
+  next();
+});
+
+exports.checkPreFollowing = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  const userTwo = req.userTwo;
+
+  const index1 = user.blocking.indexOf(userTwo._id);
+  const index2 = user.blockers.indexOf(userTwo._id);
+  if (index1 !== -1 || index2 !== -1) {
+    return next("DEFINED=You-can't-follow-a-blocked-user 400");
+  }
+  next();
+});
+
+exports.handleFollowingUser = catchAsync(async (req, res, next) => {
+  await handleActions(res, req, "following", "followers", "Followed", true);
+});
+
+exports.handleUnfollowingUser = catchAsync(async (req, res, next) => {
+  await handleActions(res, req, "following", "followers", "Unfollowed", false);
+});
+
+exports.handleBlockingUser = catchAsync(async (req, res, next) => {
+  await handleActions(res, req, "blocking", "blockers", "Blocked", true);
+});
+
+exports.handleUnblockingUser = catchAsync(async (req, res, next) => {
+  await handleActions(res, req, "blocking", "blockers", "Unblocked", false);
+});

@@ -63,12 +63,19 @@ const userSchema = new Schema({
       ref: "User",
     },
   ],
-  blocked: [
+  blocking: [
     {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
   ],
+  blockers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+
   posts: [
     {
       type: Schema.Types.ObjectId,
