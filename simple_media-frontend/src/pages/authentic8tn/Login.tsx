@@ -57,7 +57,7 @@ const Login: React.FC<Props> = () => {
             <Button btnTitle='Sign In' />
           </div>
           <p className='text-grey2 text-14 mt-4 text-center'>
-          Don’t have an account? <Link to='#' className='text-pry'>Create an account</Link>
+          Don’t have an account? <Link to='/register' className='text-pry'>Create an account</Link>
           </p>
         </form>
       </div>

@@ -9,38 +9,52 @@ interface Props {
 
 const ForgetPassword: React.FC<Props> = () => {
 
-  const [input, setInput] = useState({
-    email: '',
-  })
 
-  const handInput =(e: React.ChangeEvent<HTMLInputElement>)=> {
-    const name = (e.target as HTMLInputElement).name
-    const value = (e.target as HTMLInputElement).value
-    setInput(values => ({...values, [name]: value}))
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+
+  const handlePassword =(e: React.ChangeEvent<HTMLInputElement>)=> {
+    setPassword(e.target.value)
+  }
+
+  const handleConfirmPassword =(e: React.ChangeEvent<HTMLInputElement>)=> {
+    setConfirmPassword(e.target.value)
   }
 
   return (
     <section className='mx-4'>
       <div className='py-20'>
-        <h3 className='text-black font-semibold text-2xl'>Reset Password</h3>
+        <h3 className='text-black font-semibold text-2xl capitalize'>create new password</h3>
         <p className='text-grey2 text-14 py-2'>
-        Type your authorized email address to receive rest password link.
+          Type your new strong password. 
+          Your password must include:- Uppercase letter &  lowercase letter at least, One Special character & minimum of 8 digits long
         </p>
 
         <form className='mt-10 w-full'>
           <div>
             <TextInput 
-              placeholder="Enter your email"
-              type="email"
-              name='email'
-              value={input.email}
-              handleInput={handInput}
-              inputId="email"
-              label="Email"
-           />
+              placeholder="Enter your password"
+              type="password"
+              name='pwd'
+              value={password}
+              handleInput={handlePassword}
+              inputId="pwd"
+              label="Password"
+            />
+          </div>
+          <div className='mt-10'>
+            <TextInput 
+              placeholder="Confirm your password"
+              type="password"
+              name='password'
+              value={confirmPassword}
+              handleInput={handleConfirmPassword}
+              inputId="confirmpwd"
+              label="Confirm Password"
+            />
           </div>
           <div className='mt-20'>
-            <Button btnTitle='Sign In' />
+            <Button btnTitle='Confirm Changes' />
           </div>
           
         </form>
