@@ -1,7 +1,7 @@
 import React, { useState} from 'react';
 import { Link } from 'react-router-dom';
-import TextInput from '../components/ui/input/TextInput';
-import Button from '../components/ui/button/Button';
+import TextInput from '@/components/ui/input/TextInput';
+import Button from '@/components/ui/button/Button';
 
 
 interface Props {
