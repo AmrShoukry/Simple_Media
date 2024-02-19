@@ -6,6 +6,7 @@ import Login from '@/pages/authentic8tn/Login'
 import { Demo } from './pages/Demo'
 import ForgetPassword from './pages/authentic8tn/ForgetPassword'
 import Register from './pages/authentic8tn/Register'
+import ResetPassword from './pages/authentic8tn/ResetPassword'
 
 
 
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: '/login',
         element: <Login  />
+      },
+      {
+        path: '/reset-password',
+        element: <ResetPassword  />
       },
       {
         path: '/forget-password',
