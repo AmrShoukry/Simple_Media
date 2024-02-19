@@ -8,7 +8,7 @@ interface Props {
 
 }
 
-const Home: React.FC<Props> = () => {
+const Login: React.FC<Props> = () => {
 
   const [input, setInput] = useState({
     email: '',
@@ -51,7 +51,7 @@ const Home: React.FC<Props> = () => {
             />
           </div>
           <div className='w-full flex justify-end capitalize text-pry text-14 mt-2'>
-            <Link to="#">forget password?</Link>
+            <Link to="/forget-password">forget password?</Link>
           </div>
           <div className='mt-10'>
             <Button btnTitle='Sign In' />
@@ -65,4 +65,4 @@ const Home: React.FC<Props> = () => {
   );
 }
 
-export default Home;
+export default Login;
