@@ -1,42 +1,25 @@
-.custom {
-  position: relative;
+.input {
+  border: 1px solid #D7D7D7;
+  padding: 10px 15px;
   width: 100%;
-  // margin-top: 25px;
-  border: 1px solid #B5B6B5;
   border-radius: 10px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 11px;
+  // margin: 15px auto;
   input {
-    width: 100%;
-    position: relative;
-    background: transparent;
+    border: none;
     outline: none;
-    height: 100%;
-    color: #959DA1;
-    font-size: 1em;
-    letter-spacing: 0.05em;
-    z-index: 10;
-    &:valid ~ span, 
-    &:focus ~ span {
-      color: #B5B6B5;
-      transform: translateX(-10px) translateY(-24px);
-      font-size: 0.75em;
-      background: #fff;
-      margin-left: 30px;
-      padding: 5px;
-      
-    }
+    width: 100%;
   }
-  span {
-    position: absolute;
-    left: 0;
-    padding: 0 8px 0 13px;
-    font-size: 1em;
-    color: #959DA1;
-    pointer-events: none;
-    letter-spacing: 0.05em;
-    transition: 0.5s;
+  .icon {
+    margin: auto 7px;
+    font-size: 22px;
+    color: #898989;
+  }
+  .input__btn {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background: inherit;
   }
 }
