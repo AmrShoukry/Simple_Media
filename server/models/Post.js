@@ -10,6 +10,9 @@ const postSchema = new Schema({
     type: String,
     required: [true, "This post must have a content"],
   },
+  image: {
+    type: String,
+  },
   likes: [
     {
       type: Schema.Types.ObjectId,

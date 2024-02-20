@@ -3,6 +3,7 @@ const { json, urlencoded } = require("body-parser");
 const errorsController = require("./controllers/errorsController");
 const authRouter = require("./routes/authRoutes");
 const userRouter = require("./routes/userRoutes");
+const postsRouter = require("./routes/postRoutes");
 
 const app = express();
 
@@ -11,6 +12,8 @@ app.use(urlencoded({ extended: false }));
 
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/posts", postsRouter);
+
 
 app.use("*", (req, res, next) => {
   res.status(500).json({
