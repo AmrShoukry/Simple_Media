@@ -10,17 +10,18 @@ import './input.scss'
 
 interface Props {
   placeholder: string;
-  type: string;
+  type: 'text'|'email'|'password';
   value: string;
   name: string;
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  inputId: string;
+  inputId?: string;
   label: string;
+  // onChange: (name: string, value: string) => void;
 }
 
 const TextInput: React.FC<Props> = (props) => {
 
-  const { placeholder, type, value, name, handleInput, inputId, label } = props;
+  const { placeholder, type, value, name, inputId, label, handleInput } = props;
 
   const [hidePassword, setHidePassword] = useState({
     type: type,
@@ -31,33 +32,40 @@ const TextInput: React.FC<Props> = (props) => {
     setHidePassword({...hidePassword, showPassword: !hidePassword.showPassword})
   }
 
+
+  const getType = hidePassword.type === 'password'
+    ? hidePassword.showPassword
+      ? 'text'
+      : hidePassword.type
+    : hidePassword.type;
+
+  // const handleInput = (e:  React.ChangeEvent<HTMLInputElement>) => {
+  //   onChange((e.target as HTMLInputElement).name, (e.target as HTMLInputElement).value);
+  // }; 
+
   return (
     <>
       <label className='capitalize mb-3 block' htmlFor={inputId}>{ label }</label>
       <div className="input focus-within:border-pry focus-within:border focus:border-solid">
-      { hidePassword.type === "password" ?
+      { hidePassword.type === "password" &&
         <span>
           { hidePassword.showPassword ?
             <AiFillUnlock className='icon'/> :
             <AiFillLock className='icon'/>
           }
-        </span> :
-        null
+        </span> 
       }
-      { hidePassword.type === "email" ? <GrMailOption className='icon'/> : null }
+      {hidePassword.type === 'text' && <FaUserAlt className='icon' /> }
+      { hidePassword.type === "email" && <GrMailOption className='icon'/> }
       <input
-        type={
-            (hidePassword.type === 'password')
-            ? (hidePassword.showPassword ? 'text' : hidePassword.type)
-            : hidePassword.type
-          }
+        type={getType}
         value={value}
         onChange={handleInput}
         name={name}
         id={inputId}
         placeholder={placeholder}
       />
-      <span role='button' onClick={togglePassword} className="input__btn">
+      <span onClick={togglePassword} className="input__btn">
         { hidePassword.type === "password" ?
             <span>
               {
@@ -70,8 +78,7 @@ const TextInput: React.FC<Props> = (props) => {
             ''
         }
       </span>
-      {hidePassword.type === 'text' ? <FaUserAlt /> : null}
-      </div>
+    </div>
     </>
   );
 }

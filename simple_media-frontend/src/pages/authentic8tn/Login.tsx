@@ -51,13 +51,13 @@ const Login: React.FC<Props> = () => {
             />
           </div>
           <div className='w-full flex justify-end capitalize text-pry text-14 mt-2'>
-            <Link to="/forget-password">forget password?</Link>
+            <Link to="/reset-password">forget password?</Link>
           </div>
           <div className='mt-10'>
             <Button btnTitle='Sign In' />
           </div>
           <p className='text-grey2 text-14 mt-4 text-center'>
-          Don’t have an account? <Link to='#' className='text-pry'>Create an account</Link>
+          Don’t have an account? <Link to='/register' className='text-pry'>Create an account</Link>
           </p>
         </form>
       </div>
