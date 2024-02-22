@@ -18,7 +18,7 @@ authRouter.route("/signup").post(handleSignup);
 authRouter.route("/verifyAccount").post(handleAccountVerification);
 authRouter.route("/forgetPassword").post(handleForgetPassword);
 authRouter.route("/resetPassword").post(handleResetPassword, handleLogout);
-authRouter.route("/logout").get(handleLogout);
+authRouter.route("/logout").post(handleLogout);
 authRouter
   .route("/requestUpdateEmail")
   .post(checkLogin, handleRequestUpdateEmail);

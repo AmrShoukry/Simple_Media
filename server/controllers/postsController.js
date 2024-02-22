@@ -106,3 +106,52 @@ exports.handleUnlikingPost = catchAsync( async (req, res, next) => {
     })
   
 })
+
+
+exports.getAllPosts = catchAsync( async (req, res, next) => {
+    const posts = await Post.find()
+
+    res.status(200).json({
+        status: 'success',
+        data: posts
+    })
+})
+
+exports.getUserPosts = catchAsync( async(req, res, next) => {
+    const posts = await Post.find({"user": req.params.userId})
+
+    res.status(200).json({
+        status: 'success',
+        data: posts
+    })
+})
+
+exports.getMyPosts = catchAsync( async(req, res, next) => {
+    const posts = await Post.find({"user": req.user._id})
+
+    res.status(200).json({
+        status: 'success',
+        data: posts
+    })
+})
+
+exports.getPost = catchAsync( async(req, res, next) => {
+    const post = await Post.findOne({"_id": req.params.postId})
+
+    res.status(200).json({
+        status: 'success',
+        data: post
+    })
+})
+
+exports.getPostLikes = catchAsync(async (req, res, next) => {
+    const post = await Post.findOne({"_id": req.params.postId}).populate({
+        path: 'likes',
+        select: 'username'
+    })
+
+    res.status(200).json({
+        status: 'success',
+        data: post.likes
+    })
+})

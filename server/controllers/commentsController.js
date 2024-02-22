@@ -315,3 +315,40 @@ exports.handleUnlikingReply = catchAsync( async (req, res, next) => {
       message: 'Unliked the Reply successfully'
   })
 });
+
+
+exports.getPostComments = catchAsync(async (req, res, next) => {
+  const comments = await Comment.find({'post': req.params.postId, parentComment: null}).populate({
+    path: 'user',
+    select: 'username'
+  }).select('content image')
+
+  res.status(200).json({
+    status: 'success',
+    data: comments
+  })
+})
+
+exports.getCommentLikes = catchAsync(async(req, res, next) => {
+  const comment = await Comment.find({'_id': req.params.commentId}).populate({
+    path: 'likes',
+    select: 'username'
+  }).select('likes')
+
+  res.status(200).json({
+    status: 'success',
+    data: comment
+  })
+});
+
+exports.getCommentReplies = catchAsync(async(req, res, next) => {
+  const comment = await Comment.find({'_id': req.params.commentId}).select('replies').populate({
+    path: 'replies',
+    select: 'content image user'
+  })
+  
+  res.status(200).json({
+    status: 'success',
+    data: comment.replies
+  })
+})
