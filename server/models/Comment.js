@@ -1,10 +1,15 @@
 const { Schema, model } = require("mongoose");
 
-const postSchema = new Schema({
+const commentSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: [true, "This post must have an owner"],
+  },
+  post: {
+    type: Schema.Types.ObjectId,
+    ref: "Post",
+    required: [true, "This comment must be on a post"]
   },
   content: {
     type: String,
@@ -19,10 +24,14 @@ const postSchema = new Schema({
       ref: "User",
     },
   ],
-  comments: [
+  parentComment : {
+    type: Schema.Types.ObjectId,
+    ref: 'Comment'
+  },
+  replies: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Comment",
+      ref: "Comment"
     }
   ],
   createdAt: {
@@ -31,6 +40,6 @@ const postSchema = new Schema({
   },
 });
 
-const Post = model("Post", postSchema);
+const Comment = model("Comment", commentSchema);
 
-module.exports = Post;
+module.exports = Comment;
