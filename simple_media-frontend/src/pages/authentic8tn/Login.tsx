@@ -1,7 +1,9 @@
 import React, { useState} from 'react';
+// import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { Link } from 'react-router-dom';
 import TextInput from '@/components/ui/input/TextInput';
 import Button from '@/components/ui/button/Button';
+// import { userLoginAsync } from '@/features/auth/authSlice';
 
 
 interface Props {
@@ -15,10 +17,21 @@ const Login: React.FC<Props> = () => {
     password: ''
   })
 
+  // const error  = useAppSelector(state => state.auth)
+
+  // const dispatch = useAppDispatch()
+
   const handInput =(e: React.ChangeEvent<HTMLInputElement>)=> {
     const name = (e.target as HTMLInputElement).name
     const value = (e.target as HTMLInputElement).value
     setInput(values => ({...values, [name]: value}))
+  }
+
+  const handleSubmit =( e: React.FormEvent<HTMLFormElement>)=> {
+    e.preventDefault()
+    // dispatch(userLoginAsync(input))
+    // console.log(error);
+    
   }
 
   return (
@@ -27,7 +40,7 @@ const Login: React.FC<Props> = () => {
         <h3 className='text-black font-semibold text-2xl'>Sign In</h3>
         <p className='text-grey2 text-14 py-2'>Welcome back...</p>
 
-        <form className='mt-10 w-full'>
+        <form onSubmit={handleSubmit} className='mt-10 w-full'>
           <div>
             <TextInput 
               placeholder="Enter your email"
