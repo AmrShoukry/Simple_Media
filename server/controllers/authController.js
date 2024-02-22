@@ -107,7 +107,7 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
 
       const email = new Email(
         holdingUser,
-        `http://localhost:8000/auth/verify`,
+        `http://localhost:8000/auth/verifyAccount`,
         verificationToken
       );
 

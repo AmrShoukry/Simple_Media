@@ -6,14 +6,14 @@ const commentRouter = Router({mergeParams: true})
 
 commentRouter.use(checkLogin)
 
-postsRouter.route('/').post(handleCommenting)
-postsRouter.route('/:commentId').delete(handleDeletingComment)
-postsRouter.route('/:commentId/like').get(handleLikingComment)
-postsRouter.route('/:commentId/like').delete(handleUnlikingComment)
-postsRouter.route('/:commentId/replies').post(handleCommentReplying)
-postsRouter.route('/:commentId/replies/:replyId').delete(handleCommentUnreplying)
-postsRouter.route('/:commentId/replies/:replyId/like').get(handleLikingReply)
-postsRouter.route('/:commentId/replies/:replyId/like').delete(handleUnlikingReply)
+commentRouter.route('/').post(handleCommenting)
+commentRouter.route('/:commentId').delete(handleDeletingComment)
+commentRouter.route('/:commentId/like').get(handleLikingComment)
+commentRouter.route('/:commentId/like').delete(handleUnlikingComment)
+commentRouter.route('/:commentId/replies').post(handleCommentReplying)
+commentRouter.route('/:commentId/replies/:replyId').delete(handleCommentUnreplying)
+commentRouter.route('/:commentId/replies/:replyId/like').get(handleLikingReply)
+commentRouter.route('/:commentId/replies/:replyId/like').delete(handleUnlikingReply)
 
 
 module.exports = commentRouter

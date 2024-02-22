@@ -36,7 +36,7 @@ exports.handleCommenting = catchAsync( async(req, res, next) => {
           await sharp(req.file.buffer)
             .toFormat("jpeg")
             .jpeg({ quality: 100 })
-            .toFile(`comments-${user._id}-post-${postId}-${createdAt}.jpeg`);
+            .toFile(`images/comments-${user._id}-post-${postId}-${createdAt}.jpeg`);
         }
       
         res.status(200).json({
@@ -57,7 +57,7 @@ exports.handleDeletingComment = catchAsync( async(req, res, next) => {
   const comment = await Comment.findOne({'_id': commentId})
   const commentCreationDate = comment.createdAt.getTime();
   const user = req.user
-
+  
   if (!post || !comment) {
     return next("DEFINED=Comment-Or-Post-Doesn't-Exist 400")
   }
@@ -78,6 +78,9 @@ exports.handleDeletingComment = catchAsync( async(req, res, next) => {
   const filePath = `${__dirname}/../images/comments-${user._id}-post-${postId}-${commentCreationDate}.jpeg`
   fs.unlink(filePath, (err) => {})
 
+  comment.replies.forEach(async (reply) => {
+    await Comment.deleteOne({'_id': reply._id})
+  })
 
   await comment.deleteOne()
   await post.save()
@@ -161,9 +164,9 @@ exports.handleCommentReplying = catchAsync( async (req, res, next) => {
           return next("DEFINED=Comment-Or-Post-Doesn't-Exist 400")
         }
       
-        if (!post.comments.includes(commentId)) {
-          return next("DEFINED=This-Comment-Doesn't-Belong-To-The-Given-Post 400")
-        }
+        // if (!post.comments.includes(commentId)) {
+        //   return next("DEFINED=This-Comment-Doesn't-Belong-To-The-Given-Post 400")
+        // }
       
         const createdAt = Date.now()
         const newReply = await Comment.create({
@@ -182,7 +185,7 @@ exports.handleCommentReplying = catchAsync( async (req, res, next) => {
           await sharp(req.file.buffer)
             .toFormat("jpeg")
             .jpeg({ quality: 100 })
-            .toFile(`replies-${user._id}-comments-${commentId}-post-${postId}-${createdAt}.jpeg`);
+            .toFile(`images/replies-${user._id}-comments-${commentId}-post-${postId}-${createdAt}.jpeg`);
         }
 
         res.status(200).json({
@@ -199,7 +202,7 @@ exports.handleCommentReplying = catchAsync( async (req, res, next) => {
 exports.handleCommentUnreplying = catchAsync( async (req, res, next) => {
   const postId = req.params.postId;
   const commentId = req.params.commentId;
-  const replyId = req.params.commentId;
+  const replyId = req.params.replyId;
   const post = await Post.findOne({'_id': postId});
   const comment = await Comment.findOne({'_id': commentId})
   const reply = await Comment.findOne({'_id': replyId, parentComment: comment._id})
@@ -222,12 +225,17 @@ exports.handleCommentUnreplying = catchAsync( async (req, res, next) => {
     return next("DEFINED=You-can't-delete-other-users-comments 403")
   }
 
+  comment.replies.forEach(async (reply) => {
+    await Comment.deleteOne({'_id': reply._id})
+  })
+
   const index = comment.replies.indexOf(replyId);
   if (index !== -1) {
     comment.replies.splice(index, 1);
   }
 
-  const filePath = `${__dirname}/../images/comments-${user._id}-post-${postId}-${replyCreationDate}.jpeg`
+  const filePath = `${__dirname}/../images/replies-${user._id}-comments-${commentId}-post-${postId}-${replyCreationDate}.jpeg`
+  console.log(filePath)
   fs.unlink(filePath, (err) => {})
 
   await reply.deleteOne()
@@ -243,7 +251,7 @@ exports.handleCommentUnreplying = catchAsync( async (req, res, next) => {
 exports.handleLikingReply = catchAsync( async (req, res, next) => {
   const postId = req.params.postId;
   const commentId = req.params.commentId;
-  const replyId = req.params.commentId;
+  const replyId = req.params.replyId;
   const post = await Post.findOne({'_id': postId});
   const comment = await Comment.findOne({'_id': commentId})
   const reply = await Comment.findOne({'_id': replyId, parentComment: comment._id})
