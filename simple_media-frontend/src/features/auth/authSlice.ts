@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import authService from "./authService";
 
 
@@ -78,54 +77,6 @@ const authSlice = createSlice({
   }
 })
 
-
-// interface AuthState {
-//   isUserAuthenticated: boolean;
-//   user: User | null;
-//   error: string | null;
-// }
-
-// const authState:AuthState = {
-//   isUserAuthenticated: false,
-//   user: null,
-//   error: null
-// }
-
-// export const userLoginAsync = createAsyncThunk(
-//   'auth/login',
-//   async(credentials: {email: string; password: string;}, { rejectWithValue })=> {
-//     try {
-//       const res = await fetch('http://localhost:8000/auth/login', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(credentials)
-//       })
-//       if (!res.ok) {
-//         const errorData = await res.json();
-//         return rejectWithValue(errorData.message);
-//       }
-//       const data = await res.json();
-//       return data;
-//     } catch(error) {
-//       return rejectWithValue('error occurred')
-//     }
-//   }
-// )
-
-// const authSlice = createSlice({
-//   name: 'auth',
-//   initialState: authState,
-//   reducers: {},
-//   extraReducers: (builder)=> {
-//     builder.addCase(userLoginAsync.fulfilled, (state: AuthState, action) => {
-//       state.isUserAuthenticated = true,
-//       state.user = action.payload.user,
-//       state.error = null
-//     })
-//   }
-// })
 
 
 export const { reset } = authSlice.actions
