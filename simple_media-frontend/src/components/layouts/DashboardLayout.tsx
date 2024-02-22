@@ -16,7 +16,7 @@ const DashboardLayout: React.FC<Props> = () => {
       <div className='w-topNav relative top-0 left-280'>
         <TopNav  />
         <section className='w-full bg-grey4 round min-h-screen'>
-          <div className='mx-5 my-4'>
+          <div className='mx-10 my-4'>
             <Outlet  />
           </div>
         </section>

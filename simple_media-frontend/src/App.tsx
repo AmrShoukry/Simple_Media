@@ -14,12 +14,22 @@ import DashboardLayout from './components/layouts/DashboardLayout'
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <AuthLayout  />,
+    element: <DashboardLayout  />,
     children: [
       {
         path: '/',
         element: <Home  />
       },
+      {
+        path: '/demo',
+        element: <Demo  />
+      }
+    ]
+  },
+  {
+    path: '/',
+    element: <AuthLayout  />,
+    children: [
       {
         path: '/login',
         element: <Login  />
@@ -36,22 +46,8 @@ const router = createBrowserRouter([
         path: '/register',
         element: <Register  />
       },
-      // {
-      //   path: '/demo',
-      //   element: <Demo  />
-      // },
     ]
   },
-  {
-    path: '/',
-    element: <DashboardLayout  />,
-    children: [
-      {
-        path: '/demo',
-        element: <Demo  />
-      }
-    ]
-  }
 ])
 function App() {
   return (
