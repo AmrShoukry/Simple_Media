@@ -51,5 +51,5 @@ Simple Media is a user-friendly social media application designed to provide bas
 ## Authors
 
 - [Amr Shoukry](https://github.com/AmrShoukry)
-- [Samfrexz] (https://github.com/samfrexz619)
-- [Blessing Ose] (https://github.com/BlessingOse)
+- [Samfrexz](https://github.com/samfrexz619)
+- [Blessing Ose](https://github.com/BlessingOse)
