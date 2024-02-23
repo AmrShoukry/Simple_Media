@@ -13,7 +13,8 @@ export default {
         pry: '#00658B',
         black1: '#151722',
         textPry: '#f4f6f9',
-        grey4: '#F7F7F7'
+        grey4: '#F7F7F7',
+        grey5: '#E0E0E0',
       },
       fontSize: {
         12: '12px',
@@ -29,6 +30,9 @@ export default {
         280: '280px',
         topNav: 'calc(100% - 280px)',
         70: '70px',
+        rem: 'calc(100% - 300px)',
+        300: '300px',
+        500: '500px',
       }
     },
   },

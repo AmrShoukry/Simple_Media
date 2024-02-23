@@ -7,9 +7,10 @@ interface Props {
 
 const TopNav: React.FC<Props> = () => {
   return (
-    <header className='w-full left-280 bg-pry sticky top-0'>
-      <nav className='h-70 mx-10 flex items-center justify-end pt-3'>
-        <Avatar firstname='amr' lastname='shokury' />
+    <header className='w-full h-70 left-280 bg-pry sticky top-0 text-grey4'>
+      <nav className='h-full mx-10 flex items-center justify-end gap-x-4'>
+        <p>Welcome back, <span className='font-bold'>{'Amr Shoukry'}</span></p>
+        <Avatar firstname='amr' lastname='shokury' variant='light' />
       </nav>
     </header>
   );
