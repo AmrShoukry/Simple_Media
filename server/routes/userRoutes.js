@@ -1,38 +1,24 @@
 const { Router } = require("express");
 const {
-  handleUpdateUserData,
-  handleUpdateUserPassword,
-  handleDeletion,
-  handleFollowingUser,
-  handleUnfollowingUser,
-  checkUser,
-  handleBlockingUser,
-  handleUnblockingUser,
-  checkPreBlocking,
-  checkPreFollowing,
+  getUserFollowers,
+  getUserFollowing,
+  getUserBlockers,
+  getUserBlocking,
 } = require("../controllers/userController");
 const { checkLogin, handleLogout } = require("../controllers/authController");
+const { checkUser } = require("../controllers/meController");
+const { getUserPosts } = require("../controllers/postsController");
 
-const userRouter = Router();
+const userRouter = Router({mergeParams: true});
 
-userRouter.route("/data").patch(checkLogin, handleUpdateUserData);
-userRouter
-  .route("/password")
-  .patch(checkLogin, handleUpdateUserPassword, handleLogout);
-userRouter
-  .route("/deactivate")
-  .delete(checkLogin, handleDeletion, handleLogout);
+userRouter.use(checkLogin)
+userRouter.use(checkUser)
 
-userRouter
-  .route("/follow")
-  .post(checkLogin, checkUser, checkPreFollowing, handleFollowingUser);
-userRouter
-  .route("/unfollow")
-  .post(checkLogin, checkUser, handleUnfollowingUser);
+userRouter.route('/followers').get(getUserFollowers)
+userRouter.route('/following').get(getUserFollowing)
+userRouter.route('/blockers').get(getUserBlockers)
+userRouter.route('/blocking').get(getUserBlocking)
+userRouter.route('/posts').get(getUserPosts)
 
-userRouter
-  .route("/block")
-  .post(checkLogin, checkUser, checkPreBlocking, handleBlockingUser);
-userRouter.route("/unblock").post(checkLogin, checkUser, handleUnblockingUser);
 
 module.exports = userRouter;

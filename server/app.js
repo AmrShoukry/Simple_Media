@@ -7,6 +7,7 @@ const authRouter = require("./routes/authRoutes");
 const userRouter = require("./routes/userRoutes");
 const postsRouter = require("./routes/postRoutes");
 const commentRouter = require("./routes/commentRoutes");
+const meRouter = require("./routes/meRoutes");
 
 const app = express();
 
@@ -15,7 +16,8 @@ app.use(urlencoded({ extended: false }));
 
 app.use(cors())
 app.use("/auth", authRouter);
-app.use("/user", userRouter);
+app.use("/user/:userId", userRouter);
+app.use("/me", meRouter)
 app.use("/posts", postsRouter);
 app.use('/posts/:postId/comments', commentRouter)
 
