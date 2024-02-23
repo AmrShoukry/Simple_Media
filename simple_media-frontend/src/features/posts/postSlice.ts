@@ -39,10 +39,13 @@ const postSlice = createSlice({
     },
     toggleModal: (state: PostState)=> {
       state.showModal = !state.showModal
+    },
+    deletePost: (state: PostState, action: PayloadAction<string>)=> {
+      state.posts = state.posts.filter(post => post.id !== action.payload)
     }
   }
 })
 
-export const { createPost, toggleModal }  = postSlice.actions
+export const { createPost, toggleModal, deletePost }  = postSlice.actions
 
 export default postSlice.reducer

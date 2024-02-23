@@ -3,7 +3,7 @@ import { GoPencil } from "react-icons/go";
 import Avatar from '@/components/ui/avatar/Avatar';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import Post from '@/features/posts/Post';
-import { toggleModal } from '@/features/posts/postSlice';
+import { toggleModal, deletePost } from '@/features/posts/postSlice';
 
 
 
@@ -20,6 +20,11 @@ const Home: React.FC<Props> = () => {
 
   const handleOpenModal =()=> {
     dispatch(toggleModal())
+  }
+
+  const handleDeletePost =(id: string)=> {
+    dispatch(deletePost(id))
+    console.log(id)
   }
   
   return (
@@ -40,7 +45,12 @@ const Home: React.FC<Props> = () => {
         <ul className='my-5 '>
           {
             posts.map(post => (
-             <Post key={post.id} post={post.body} />
+             <Post 
+              key={post.id} 
+              post={post.body} 
+              handleDeletePost={handleDeletePost}
+              idx={post.id}
+            />
             ))
           }
         </ul>
