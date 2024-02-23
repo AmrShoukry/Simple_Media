@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MdClose } from "react-icons/md";
+import { GoPencil } from "react-icons/go";
 import Avatar from '../avatar/Avatar';
 import { useAppDispatch } from '@/app/hooks';
 import { createPost, toggleModal } from '@/features/posts/postSlice';
@@ -46,7 +47,7 @@ const Modal: React.FC<Props> = () => {
           </div>
 
           <form onSubmit={handleSubmit} className=''>
-            <div className='modal_input px-5'>
+            <div className='modal_input pl-8 pr-7'>
               <textarea 
                 value={postText} 
                 name='post'
@@ -55,9 +56,16 @@ const Modal: React.FC<Props> = () => {
                 onChange={handleChange} 
               />
             </div>
+            <span className='flex justify-end pr-5 -mt-5'>
+              <GoPencil  />
+            </span>
             <div 
               className="modal_footer items-center bottom-0 flex justify-end absolute left-0 py-4 px-5">
-              <button className='bg-pry text-grey4 py-2 px-7 rounded-lg'>
+              <button 
+                disabled={!postText.trim()} 
+                className={
+                `bg-pry text-grey4 py-2 px-7 rounded-lg ${!postText.trim() && 'bg-gray-400'}`
+              }>
                 Post
               </button>
             </div>

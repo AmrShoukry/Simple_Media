@@ -1,4 +1,5 @@
 import React from 'react';
+import { GoPencil } from "react-icons/go";
 import Avatar from '@/components/ui/avatar/Avatar';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import Post from '@/features/posts/Post';
@@ -20,15 +21,19 @@ const Home: React.FC<Props> = () => {
   const handleOpenModal =()=> {
     dispatch(toggleModal())
   }
+  
   return (
     <section className='mx-4 w-full'>
-      <div onClick={handleOpenModal} className='w-500 py-7 cursor-pointer border bg-white border-solid border-grey5 rounded-md px-6'>
+      <div onClick={handleOpenModal} className='w-500 py-7 cursor-pointer border bg-white border-solid border-grey5 rounded-md relative px-6'>
         <div className='w-full flex items-center gap-x-5'>
           <Avatar firstname='Amr' lastname='Shoukry' variant='pry' />
           <h2 className='text-gray-400 text-2xl'>
             Share what's on your mind, {'Amr'}...
           </h2>
         </div>
+        <span className='absolute right-6 top-11'>
+          <GoPencil  />
+        </span>
       </div>
 
       <div className='mt-14'>
