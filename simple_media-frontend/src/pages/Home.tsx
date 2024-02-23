@@ -1,32 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Avatar from '@/components/ui/avatar/Avatar';
-import { useAppSelector } from '@/app/hooks';
+import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import Post from '@/features/posts/Post';
-// import { increment } from '@/features/counterSlice';
+import { toggleModal } from '@/features/posts/postSlice';
+
+
+
+
 interface Props {
 
 }
 
 const Home: React.FC<Props> = () => {
-
-  const [postText, setPostText] = useState('')
   
   const posts = useAppSelector(state => state.posts.posts);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPostText(e.target.value);
-  };
+  const dispatch = useAppDispatch()
 
-  const handleSubmit =(e: React.FormEvent<HTMLFormElement>)=> {
-    e.preventDefault()
-    console.log(postText)
-    setPostText('')
+  const handleOpenModal =()=> {
+    dispatch(toggleModal())
   }
-
-
   return (
     <section className='mx-4 w-full'>
-      <div className='w-500 py-7 border bg-white border-solid border-grey5 rounded-md px-6'>
+      <div onClick={handleOpenModal} className='w-500 py-7 cursor-pointer border bg-white border-solid border-grey5 rounded-md px-6'>
         <div className='w-full flex items-center gap-x-5'>
           <Avatar firstname='Amr' lastname='Shoukry' variant='pry' />
           <h2 className='text-gray-400 text-2xl'>
@@ -35,14 +31,7 @@ const Home: React.FC<Props> = () => {
         </div>
       </div>
 
-      <div className=''>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <input type="text" value={postText} onChange={handleChange} />
-          </div>
-          <button>submit</button>
-        </form>
-
+      <div className='mt-14'>
         <ul className='my-5 '>
           {
             posts.map(post => (

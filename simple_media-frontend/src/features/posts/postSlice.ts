@@ -1,26 +1,29 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { uid } from 'uid';
 
 
 type Posts = {
-  id: number;
+  id: string;
   body: string;
 }
 
 interface PostState {
   posts: Posts[];
+  showModal: boolean;
 }
 
 const postState: PostState = {
   posts: [
     {
-      id: 1,
+      id: '1',
       body: 'Sometimes I feel like coding is mentally exhausting'
     },
     {
-      id: 2,
+      id: '2',
       body: 'Arsenal football club is by the best club, bar none'
     },
-  ]
+  ],
+  showModal: false
 }
 
 const postSlice = createSlice({
@@ -29,11 +32,17 @@ const postSlice = createSlice({
   reducers: {
     createPost: (state: PostState, action: PayloadAction<string>) => {
       const newPost = {
-        
+        id: uid(4),
+        body: action.payload
       }
+      state.posts.unshift(newPost)
+    },
+    toggleModal: (state: PostState)=> {
+      state.showModal = !state.showModal
     }
   }
 })
 
+export const { createPost, toggleModal }  = postSlice.actions
 
 export default postSlice.reducer
