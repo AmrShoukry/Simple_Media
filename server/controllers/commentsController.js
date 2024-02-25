@@ -1,12 +1,12 @@
-const sharp = require('sharp');
-const Comment = require('../models/Comment');
-const Post = require('../models/Post');
-const catchAsync = require('../utils/catchAsync');
-const { upload } = require('../utils/uploadImage');
-const fs = require('fs');
+const sharp = require("sharp");
+const Comment = require("../models/Comment");
+const Post = require("../models/Post");
+const catchAsync = require("../utils/catchAsync");
+const { upload } = require("../utils/uploadImage");
+const fs = require("fs");
 
 exports.handleCommenting = catchAsync(async (req, res, next) => {
-  upload.single('image')(req, res, async function (err) {
+  upload.single("image")(req, res, async function (err) {
     try {
       if (err) {
         return next(err);
@@ -15,7 +15,7 @@ exports.handleCommenting = catchAsync(async (req, res, next) => {
       const postId = req.params.postId;
       const post = await Post.findOne({ _id: postId });
       if (!post) {
-        return next('DEFINED=No-Post-With-That-Id-Found 400');
+        return next("DEFINED=No-Post-With-That-Id-Found 400");
       }
       const user = req.user;
 
@@ -34,16 +34,16 @@ exports.handleCommenting = catchAsync(async (req, res, next) => {
 
       if (req.file) {
         await sharp(req.file.buffer)
-          .toFormat('jpeg')
+          .toFormat("jpeg")
           .jpeg({ quality: 100 })
           .toFile(
-            `images/comments-${user._id}-post-${postId}-${createdAt}.jpeg`,
+            `images/comments-${user._id}-post-${postId}-${createdAt}.jpeg`
           );
       }
 
       res.status(200).json({
-        status: 'success',
-        message: 'Commented on post successfully',
+        status: "success",
+        message: "Commented on post successfully",
       });
     } catch (err) {
       return next(err);
@@ -87,8 +87,8 @@ exports.handleDeletingComment = catchAsync(async (req, res, next) => {
   await post.save();
 
   res.status(204).json({
-    status: 'success',
-    message: 'Comment Deleted successfully',
+    status: "success",
+    message: "Comment Deleted successfully",
   });
 });
 
@@ -114,8 +114,8 @@ exports.handleLikingComment = catchAsync(async (req, res, next) => {
   await comment.save();
 
   res.status(200).json({
-    status: 'success',
-    message: 'Liked the comment successfully',
+    status: "success",
+    message: "Liked the comment successfully",
   });
 });
 
@@ -142,13 +142,13 @@ exports.handleUnlikingComment = catchAsync(async (req, res, next) => {
   await comment.save();
 
   res.status(200).json({
-    status: 'success',
-    message: 'unliked the comment successfully',
+    status: "success",
+    message: "unliked the comment successfully",
   });
 });
 
 exports.handleCommentReplying = catchAsync(async (req, res, next) => {
-  upload.single('image')(req, res, async function (err) {
+  upload.single("image")(req, res, async function (err) {
     try {
       if (err) {
         return next(err);
@@ -182,16 +182,16 @@ exports.handleCommentReplying = catchAsync(async (req, res, next) => {
 
       if (req.file) {
         await sharp(req.file.buffer)
-          .toFormat('jpeg')
+          .toFormat("jpeg")
           .jpeg({ quality: 100 })
           .toFile(
-            `images/replies-${user._id}-comments-${commentId}-post-${postId}-${createdAt}.jpeg`,
+            `images/replies-${user._id}-comments-${commentId}-post-${postId}-${createdAt}.jpeg`
           );
       }
 
       res.status(200).json({
-        status: 'success',
-        message: 'Replied on comment successfully',
+        status: "success",
+        message: "Replied on comment successfully",
       });
     } catch (error) {
       return next(error);
@@ -245,8 +245,8 @@ exports.handleCommentUnreplying = catchAsync(async (req, res, next) => {
   await comment.save();
 
   res.status(204).json({
-    status: 'success',
-    message: 'Reply Deleted successfully',
+    status: "success",
+    message: "Reply Deleted successfully",
   });
 });
 
@@ -281,8 +281,8 @@ exports.handleLikingReply = catchAsync(async (req, res, next) => {
   await reply.save();
 
   res.status(200).json({
-    status: 'success',
-    message: 'Liked the Reply successfully',
+    status: "success",
+    message: "Liked the Reply successfully",
   });
 });
 
@@ -318,8 +318,8 @@ exports.handleUnlikingReply = catchAsync(async (req, res, next) => {
   await reply.save();
 
   res.status(200).json({
-    status: 'success',
-    message: 'Unliked the Reply successfully',
+    status: "success",
+    message: "Unliked the Reply successfully",
   });
 });
 
@@ -329,13 +329,13 @@ exports.getPostComments = catchAsync(async (req, res, next) => {
     parentComment: null,
   })
     .populate({
-      path: 'user',
-      select: 'username',
+      path: "user",
+      select: "username",
     })
-    .select('content image');
+    .select("content image");
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: comments,
   });
 });
@@ -343,27 +343,27 @@ exports.getPostComments = catchAsync(async (req, res, next) => {
 exports.getCommentLikes = catchAsync(async (req, res, next) => {
   const comment = await Comment.find({ _id: req.params.commentId })
     .populate({
-      path: 'likes',
-      select: 'username',
+      path: "likes",
+      select: "username",
     })
-    .select('likes');
+    .select("likes");
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: comment,
   });
 });
 
 exports.getCommentReplies = catchAsync(async (req, res, next) => {
   const comment = await Comment.find({ _id: req.params.commentId })
-    .select('replies')
+    .select("replies")
     .populate({
-      path: 'replies',
-      select: 'content image user',
+      path: "replies",
+      select: "content image user",
     });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: comment.replies,
   });
 });

@@ -1,38 +1,38 @@
-const catchAsync = require('../utils/catchAsync');
-const User = require('../models/User');
-const { hash, compare } = require('bcrypt');
-const { upload } = require('../utils/uploadImage');
-const sharp = require('sharp');
-const fs = require('fs');
+const catchAsync = require("../utils/catchAsync");
+const User = require("../models/User");
+const { hash, compare } = require("bcrypt");
+const { upload } = require("../utils/uploadImage");
+const sharp = require("sharp");
+const fs = require("fs");
 
 async function getMy(req, res, action) {
   const data = await User.find({ _id: req.user._id })
     .populate({
       path: action,
-      select: 'username',
+      select: "username",
     })
     .select(action);
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: data,
   });
 }
 
 exports.getMyFollowers = catchAsync(async (req, res, next) => {
-  return await getMy(req, res, 'followers');
+  return await getMy(req, res, "followers");
 });
 
 exports.getMyFollowing = catchAsync(async (req, res, next) => {
-  return await getMy(req, res, 'following');
+  return await getMy(req, res, "following");
 });
 
 exports.getMyBlockers = catchAsync(async (req, res, next) => {
-  return await getMy(req, res, 'blockers');
+  return await getMy(req, res, "blockers");
 });
 
 exports.getMyBlocking = catchAsync(async (req, res, next) => {
-  return await getMy(req, res, 'blocking');
+  return await getMy(req, res, "blocking");
 });
 
 function renameImage(oldUserName, newUserName, user) {
@@ -51,7 +51,7 @@ function checkNamingAvailability(
   field,
   time,
   name1,
-  name2 = null,
+  name2 = null
 ) {
   const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
   const lastModifiedTimestamp =
@@ -77,7 +77,7 @@ function checkNamingAvailability(
 }
 
 exports.handleUpdateUserData = catchAsync(async (req, res, next) => {
-  upload.single('profilePicture')(req, res, async function (err) {
+  upload.single("profilePicture")(req, res, async function (err) {
     try {
       if (err) {
         return next(err);
@@ -100,10 +100,10 @@ exports.handleUpdateUserData = catchAsync(async (req, res, next) => {
         const nameAvailability = checkNamingAvailability(
           newData,
           user,
-          'name',
-          'nameLastModifiedAt',
-          'firstName',
-          'lastName',
+          "name",
+          "nameLastModifiedAt",
+          "firstName",
+          "lastName"
         );
         if (nameAvailability !== true) {
           return next(nameAvailability);
@@ -115,9 +115,9 @@ exports.handleUpdateUserData = catchAsync(async (req, res, next) => {
         const usernameAvailability = checkNamingAvailability(
           newData,
           user,
-          'username',
-          'usernameLastModifiedAt',
-          'username',
+          "username",
+          "usernameLastModifiedAt",
+          "username"
         );
         if (usernameAvailability !== true) {
           return next(usernameAvailability);
@@ -131,14 +131,14 @@ exports.handleUpdateUserData = catchAsync(async (req, res, next) => {
       if (req.file) {
         await sharp(req.file.buffer)
           .resize(200, 200)
-          .toFormat('jpeg')
+          .toFormat("jpeg")
           .jpeg({ quality: 90 })
           .toFile(`images/profilePicture-${user.username}.jpeg`);
       }
 
       res.status(200).json({
-        status: 'success',
-        message: 'Data Updated Successfully',
+        status: "success",
+        message: "Data Updated Successfully",
       });
     } catch (err) {
       console.log(err);
@@ -157,7 +157,7 @@ exports.handleUpdateUserPassword = catchAsync(async (req, res, next) => {
   console.log(user.password);
 
   if (!(await compare(oldPassword, user.password))) {
-    return next('DEFINED=Old-password-incorrect 400');
+    return next("DEFINED=Old-password-incorrect 400");
   }
 
   user.password = newPassword;
@@ -166,20 +166,20 @@ exports.handleUpdateUserPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   res.status(200).json({
-    status: 'success',
-    message: 'Password Updated Successfully',
+    status: "success",
+    message: "Password Updated Successfully",
   });
 });
 
 exports.handleDeletion = catchAsync(async (req, res, next) => {
   const user = req.user;
-  user.active = 'deactivated';
+  user.active = "deactivated";
 
   await user.save();
 
   res.status(204).json({
-    status: 'success',
-    message: 'deleted successfully',
+    status: "success",
+    message: "deleted successfully",
   });
 });
 
@@ -228,7 +228,7 @@ async function handleActions(
   action,
   reverseAction,
   message,
-  Inserting,
+  Inserting
 ) {
   const user = req.user;
   const userTwo = req.userTwo;
@@ -249,7 +249,7 @@ async function handleActions(
   await userTwo.save();
 
   return res.status(200).json({
-    status: 'success',
+    status: "success",
     message: `${user.firstName} ${message} ${userTwo.firstName} successfully`,
   });
 }
@@ -258,8 +258,8 @@ exports.checkPreBlocking = catchAsync(async (req, res, next) => {
   const user = req.user;
   const userTwo = req.userTwo;
 
-  deleteFromList(user, userTwo, 'following', 'followers');
-  deleteFromList(user, userTwo, 'followers', 'following');
+  deleteFromList(user, userTwo, "following", "followers");
+  deleteFromList(user, userTwo, "followers", "following");
 
   next();
 });
@@ -277,28 +277,28 @@ exports.checkPreFollowing = catchAsync(async (req, res, next) => {
 });
 
 exports.handleFollowingUser = catchAsync(async (req, res, next) => {
-  await handleActions(res, req, 'following', 'followers', 'Followed', true);
+  await handleActions(res, req, "following", "followers", "Followed", true);
 });
 
 exports.handleUnfollowingUser = catchAsync(async (req, res, next) => {
-  await handleActions(res, req, 'following', 'followers', 'Unfollowed', false);
+  await handleActions(res, req, "following", "followers", "Unfollowed", false);
 });
 
 exports.handleBlockingUser = catchAsync(async (req, res, next) => {
-  await handleActions(res, req, 'blocking', 'blockers', 'Blocked', true);
+  await handleActions(res, req, "blocking", "blockers", "Blocked", true);
 });
 
 exports.handleUnblockingUser = catchAsync(async (req, res, next) => {
-  await handleActions(res, req, 'blocking', 'blockers', 'Unblocked', false);
+  await handleActions(res, req, "blocking", "blockers", "Unblocked", false);
 });
 
 exports.getMyData = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ _id: req.user._id }).select(
-    '-password -passwordConfirm -active',
+    "-password -passwordConfirm -active"
   );
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: user,
   });
 });

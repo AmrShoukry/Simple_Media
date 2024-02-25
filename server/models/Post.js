@@ -1,14 +1,14 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
 const postSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'This post must have an owner'],
+    ref: "User",
+    required: [true, "This post must have an owner"],
   },
   content: {
     type: String,
-    required: [true, 'This post must have a content'],
+    required: [true, "This post must have a content"],
   },
   image: {
     type: String,
@@ -16,13 +16,13 @@ const postSchema = new Schema({
   likes: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
   ],
   comments: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Comment',
+      ref: "Comment",
     },
   ],
   createdAt: {
@@ -31,6 +31,6 @@ const postSchema = new Schema({
   },
 });
 
-const Post = model('Post', postSchema);
+const Post = model("Post", postSchema);
 
 module.exports = Post;
