@@ -80,54 +80,45 @@ exports.handleLogin = catchAsync(async (req, res, next) => {
 });
 
 exports.handleSignup = catchAsync(async (req, res, next) => {
-  upload.single("profilePicture")(req, res, async function (err) {
-    try {
-      if (err) {
-        return next(err);
-      }
-      let holdingUser = await User.findOne({
-        email: req.body.email,
-        active: "holding",
-      });
+  let holdingUser = await User.findOne({
+    email: req.body.email,
+    active: "holding",
+  });
 
-      let verificationToken = holdingUser?.token || undefined;
+  let verificationToken = holdingUser?.token || undefined;
 
-      if (!holdingUser) {
-        verificationToken = generateVerificationToken();
-        holdingUser = await User.create({
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          username: req.body.username,
-          email: req.body.email,
-          password: req.body.password,
-          passwordConfirm: req.body.passwordConfirm,
-          profilePicture: req.file
-            ? `profilePicture-${req.body.username}.jpeg`
-            : "default.jpeg",
-          active: "holding",
-          token: verificationToken,
-        });
-      }
+  if (!holdingUser) {
+    verificationToken = generateVerificationToken();
+    holdingUser = await User.create({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+      profilePicture: req.file
+        ? `profilePicture-${req.body.username}.jpeg`
+        : "default.jpeg",
+      active: "holding",
+      token: verificationToken,
+    });
+  }
 
-      const email = new Email(
-        holdingUser,
-        `http://localhost:8000/auth/verifyAccount`,
-        verificationToken
-      );
+  const email = new Email(
+    holdingUser,
+    `http://localhost:8000/auth/verifyAccount`,
+    verificationToken
+  );
 
-      email.send("verify", "Email verification");
+  email.send("verify", "Email verification");
 
-      if (req.file) {
-        // prettier-ignore
-        await saveImage(req, 200, 200, 90, `images/profilePicture-${holdingUser.username}.jpeg`);
-      }
+  if (req.file) {
+    // prettier-ignore
+    await saveImage(req, 200, 200, 90, `images/profilePicture-${holdingUser.username}.jpeg`);
+  }
 
-      res.status(201).json({
-        status: "Email Sent successfully",
-      });
-    } catch (err) {
-      return next(err);
-    }
+  res.status(201).json({
+    status: "Email Sent successfully",
   });
 });
 

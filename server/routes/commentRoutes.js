@@ -13,12 +13,16 @@ const {
   getCommentReplies,
 } = require("../controllers/commentsController");
 const { checkLogin } = require("../controllers/authController");
+const { uploadImage } = require("../controllers/postsController");
 
 const commentRouter = Router({ mergeParams: true });
 
 commentRouter.use(checkLogin);
 
-commentRouter.route("/").post(handleCommenting).get(getPostComments);
+commentRouter
+  .route("/")
+  .post(uploadImage("image"), handleCommenting)
+  .get(getPostComments);
 commentRouter.route("/:commentId").delete(handleDeletingComment);
 commentRouter
   .route("/:commentId/likes")
@@ -27,7 +31,7 @@ commentRouter
   .get(getCommentLikes);
 commentRouter
   .route("/:commentId/replies")
-  .post(handleCommentReplying)
+  .post(uploadImage("image"), handleCommentReplying)
   .get(getCommentReplies);
 commentRouter
   .route("/:commentId/replies/:replyId")

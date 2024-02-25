@@ -77,70 +77,59 @@ function checkNamingAvailability(
 }
 
 exports.handleUpdateUserData = catchAsync(async (req, res, next) => {
-  upload.single("profilePicture")(req, res, async function (err) {
-    try {
-      if (err) {
-        return next(err);
-      }
+  const user = req.user;
 
-      const user = req.user;
+  const newData = {
+    firstName: req.body.firstName || user.firstName,
+    lastName: req.body.lastName || user.lastName,
+    username: req.body.username || user.username,
+  };
 
-      const newData = {
-        firstName: req.body.firstName || user.firstName,
-        lastName: req.body.lastName || user.lastName,
-        username: req.body.username || user.username,
-      };
+  console.log(newData.firstName);
 
-      console.log(newData.firstName);
-
-      if (
-        newData.firstName !== user.firstName ||
-        newData.lastName !== user.lastName
-      ) {
-        const nameAvailability = checkNamingAvailability(
-          newData,
-          user,
-          "name",
-          "nameLastModifiedAt",
-          "firstName",
-          "lastName"
-        );
-        if (nameAvailability !== true) {
-          return next(nameAvailability);
-        }
-      }
-
-      if (newData.username !== user.username) {
-        const oldUserName = user.username;
-        const usernameAvailability = checkNamingAvailability(
-          newData,
-          user,
-          "username",
-          "usernameLastModifiedAt",
-          "username"
-        );
-        if (usernameAvailability !== true) {
-          return next(usernameAvailability);
-        }
-
-        renameImage(oldUserName, user.username, user);
-      }
-
-      await user.save();
-
-      if (req.file) {
-        // prettier-ignore
-        await saveImage(req, 200, 200, 90, `images/profilePicture-${user.username}.jpeg`)
-      }
-
-      res.status(200).json({
-        status: "success",
-        message: "Data Updated Successfully",
-      });
-    } catch (err) {
-      console.log(err);
-      return next(err);
+  if (
+    newData.firstName !== user.firstName ||
+    newData.lastName !== user.lastName
+  ) {
+    const nameAvailability = checkNamingAvailability(
+      newData,
+      user,
+      "name",
+      "nameLastModifiedAt",
+      "firstName",
+      "lastName"
+    );
+    if (nameAvailability !== true) {
+      return next(nameAvailability);
     }
+  }
+
+  if (newData.username !== user.username) {
+    const oldUserName = user.username;
+    const usernameAvailability = checkNamingAvailability(
+      newData,
+      user,
+      "username",
+      "usernameLastModifiedAt",
+      "username"
+    );
+    if (usernameAvailability !== true) {
+      return next(usernameAvailability);
+    }
+
+    renameImage(oldUserName, user.username, user);
+  }
+
+  await user.save();
+
+  if (req.file) {
+    // prettier-ignore
+    await saveImage(req, 200, 200, 90, `images/profilePicture-${user.username}.jpeg`)
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Data Updated Successfully",
   });
 });
 

@@ -9,6 +9,7 @@ const {
   getMyPosts,
   getPost,
   getPostLikes,
+  uploadImage,
 } = require("../controllers/postsController");
 const { checkLogin } = require("../controllers/authController");
 
@@ -16,7 +17,10 @@ const postsRouter = Router();
 
 postsRouter.use(checkLogin);
 
-postsRouter.route("/").post(handleCreatingPost).get(getAllPosts);
+postsRouter
+  .route("/")
+  .post(uploadImage("image"), handleCreatingPost)
+  .get(getAllPosts);
 postsRouter.route("/:postId").delete(handleDeletingPost).get(getPost);
 postsRouter
   .route("/:postId/likes")

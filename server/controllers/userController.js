@@ -1,9 +1,5 @@
 const catchAsync = require("../utils/catchAsync");
 const User = require("../models/User");
-const { hash, compare } = require("bcrypt");
-const { upload } = require("../utils/uploadImage");
-const sharp = require("sharp");
-const fs = require("fs");
 
 async function getUser(req, res, action) {
   const data = await User.find({ _id: req.params.userId })

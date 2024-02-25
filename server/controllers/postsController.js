@@ -4,38 +4,38 @@ const { upload } = require("../utils/uploadImage");
 const fs = require("fs");
 const saveImage = require("../utils/saveImage");
 
-exports.handleCreatingPost = catchAsync(async (req, res, next) => {
-  upload.single("image")(req, res, async function (err) {
-    try {
-      if (err) {
-        return next(err);
-      }
-      const createdAt = Date.now();
-      const newPost = await Post.create({
-        user: req.user._id,
-        content: req.body.content,
-        image: `posts-${req.user._id}-${createdAt}.jpeg`,
-        createdAt: createdAt,
-      });
-
-      const user = req.user;
-
-      user.posts.push(newPost._id);
-
-      await user.save();
-
-      if (req.file) {
-        // prettier-ignore
-        await saveImage(req, null, null, 95, `images/posts-${req.user._id}-${createdAt}.jpeg`)
-      }
-
-      res.status(201).json({
-        status: "success",
-        message: "created successfully",
-      });
-    } catch (error) {
-      next(error);
+exports.uploadImage = (field) => (req, res, next) => {
+  upload.single(field)(req, res, async function (err) {
+    if (err) {
+      return next(err);
     }
+  });
+  next();
+};
+
+exports.handleCreatingPost = catchAsync(async (req, res, next) => {
+  const createdAt = Date.now();
+  const newPost = await Post.create({
+    user: req.user._id,
+    content: req.body.content,
+    image: `posts-${req.user._id}-${createdAt}.jpeg`,
+    createdAt: createdAt,
+  });
+
+  const user = req.user;
+
+  user.posts.push(newPost._id);
+
+  await user.save();
+
+  if (req.file) {
+    // prettier-ignore
+    await saveImage(req, null, null, 95, `images/posts-${req.user._id}-${createdAt}.jpeg`)
+  }
+
+  res.status(201).json({
+    status: "success",
+    message: "created successfully",
   });
 });
 

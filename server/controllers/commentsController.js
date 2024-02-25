@@ -6,44 +6,34 @@ const fs = require("fs");
 const saveImage = require("../utils/saveImage");
 
 exports.handleCommenting = catchAsync(async (req, res, next) => {
-  upload.single("image")(req, res, async function (err) {
-    try {
-      if (err) {
-        return next(err);
-      }
+  const postId = req.params.postId;
+  const post = await Post.findOne({ _id: postId });
+  if (!post) {
+    return next("DEFINED=No-Post-With-That-Id-Found 400");
+  }
+  const user = req.user;
 
-      const postId = req.params.postId;
-      const post = await Post.findOne({ _id: postId });
-      if (!post) {
-        return next("DEFINED=No-Post-With-That-Id-Found 400");
-      }
-      const user = req.user;
+  const createdAt = Date.now();
+  const newComment = await Comment.create({
+    user: user._id,
+    post: postId,
+    content: req.body.content,
+    image: `comments-${user._id}-post-${postId}-${createdAt}.jpeg`,
+    createdAt: createdAt,
+  });
 
-      const createdAt = Date.now();
-      const newComment = await Comment.create({
-        user: user._id,
-        post: postId,
-        content: req.body.content,
-        image: `comments-${user._id}-post-${postId}-${createdAt}.jpeg`,
-        createdAt: createdAt,
-      });
+  post.comments.push(newComment._id);
 
-      post.comments.push(newComment._id);
+  await post.save();
 
-      await post.save();
+  if (req.file) {
+    // prettier-ignore
+    await saveImage(req, null, null, 95, `images/comments-${user._id}-post-${postId}-${createdAt}.jpeg`)
+  }
 
-      if (req.file) {
-        // prettier-ignore
-        await saveImage(req, null, null, 95, `images/comments-${user._id}-post-${postId}-${createdAt}.jpeg`)
-      }
-
-      res.status(200).json({
-        status: "success",
-        message: "Commented on post successfully",
-      });
-    } catch (err) {
-      return next(err);
-    }
+  res.status(200).json({
+    status: "success",
+    message: "Commented on post successfully",
   });
 });
 
@@ -144,50 +134,41 @@ exports.handleUnlikingComment = catchAsync(async (req, res, next) => {
 });
 
 exports.handleCommentReplying = catchAsync(async (req, res, next) => {
-  upload.single("image")(req, res, async function (err) {
-    try {
-      if (err) {
-        return next(err);
-      }
-      const postId = req.params.postId;
-      const commentId = req.params.commentId;
-      const post = await Post.findOne({ _id: postId });
-      const comment = await Comment.findOne({ _id: commentId });
-      const user = req.user;
+  const postId = req.params.postId;
+  const commentId = req.params.commentId;
+  const post = await Post.findOne({ _id: postId });
+  const comment = await Comment.findOne({ _id: commentId });
+  const user = req.user;
 
-      if (!post || !comment) {
-        return next("DEFINED=Comment-Or-Post-Doesn't-Exist 400");
-      }
+  if (!post || !comment) {
+    return next("DEFINED=Comment-Or-Post-Doesn't-Exist 400");
+  }
 
-      // if (!post.comments.includes(commentId)) {
-      //   return next("DEFINED=This-Comment-Doesn't-Belong-To-The-Given-Post 400")
-      // }
+  // if (!post.comments.includes(commentId)) {
+  //   return next("DEFINED=This-Comment-Doesn't-Belong-To-The-Given-Post 400")
+  // }
 
-      const createdAt = Date.now();
-      const newReply = await Comment.create({
-        user: user._id,
-        post: postId,
-        content: req.body.content,
-        image: `replies-${user._id}-comments-${commentId}-post-${postId}-${createdAt}.jpeg`,
-        createdAt: createdAt,
-        parentComment: comment._id,
-      });
+  const createdAt = Date.now();
+  const newReply = await Comment.create({
+    user: user._id,
+    post: postId,
+    content: req.body.content,
+    image: `replies-${user._id}-comments-${commentId}-post-${postId}-${createdAt}.jpeg`,
+    createdAt: createdAt,
+    parentComment: comment._id,
+  });
 
-      comment.replies.push(newReply._id);
-      await comment.save();
+  comment.replies.push(newReply._id);
+  await comment.save();
 
-      if (req.file) {
-        // prettier-ignore
-        await saveImage(req, null, null, 95, `images/replies-${user._id}-comments-${commentId}-post-${postId}-${createdAt}.jpeg`)
-      }
+  if (req.file) {
+    // prettier-ignore
+    await saveImage(req, null, null, 95, `images/replies-${user._id}-comments-${commentId}-post-${postId}-${createdAt}.jpeg`)
+  }
 
-      res.status(200).json({
-        status: "success",
-        message: "Replied on comment successfully",
-      });
-    } catch (error) {
-      return next(error);
-    }
+  res.status(200).json({
+    status: "success",
+    message: "Replied on comment successfully",
   });
 });
 

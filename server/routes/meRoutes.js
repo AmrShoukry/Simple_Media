@@ -18,22 +18,22 @@ const {
   checkSelf,
 } = require("../controllers/meController");
 const { handleLogout, checkLogin } = require("../controllers/authController");
-const { getMyPosts } = require("../controllers/postsController");
+const { getMyPosts, uploadImage } = require("../controllers/postsController");
 
 const meRouter = Router();
 
 meRouter.use(checkLogin);
 
-meRouter.route("/data").get(getMyData).patch(handleUpdateUserData);
+meRouter
+  .route("/data")
+  .get(getMyData)
+  .patch(uploadImage("profilePicture"), handleUpdateUserData);
 meRouter.route("/password").patch(handleUpdateUserPassword, handleLogout);
 meRouter.route("/deactivate").delete(handleDeletion, handleLogout);
 
 meRouter.route("/followers").get(getMyFollowers);
-
 meRouter.route("/following").get(getMyFollowing);
-
 meRouter.route("/blockers").get(getMyBlockers);
-
 meRouter.route("/blocking").get(getMyBlocking);
 
 meRouter
