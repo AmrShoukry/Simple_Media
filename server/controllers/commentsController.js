@@ -1,7 +1,6 @@
 const Comment = require("../models/Comment");
 const Post = require("../models/Post");
 const catchAsync = require("../utils/catchAsync");
-const { upload } = require("../utils/uploadImage");
 const fs = require("fs");
 const saveImage = require("../utils/saveImage");
 

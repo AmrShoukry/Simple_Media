@@ -1,7 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const User = require("../models/User");
 const { compare } = require("bcrypt");
-const { upload } = require("../utils/uploadImage");
 const fs = require("fs");
 const saveImage = require("../utils/saveImage");
 

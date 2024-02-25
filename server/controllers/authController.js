@@ -1,7 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const User = require("../models/User");
 const { compare } = require("bcrypt");
-const { upload } = require("../utils/uploadImage");
 const jwt = require("jsonwebtoken");
 const Email = require("../utils/email");
 const crypto = require("crypto");

@@ -1,17 +1,7 @@
 const Post = require("../models/Post");
 const catchAsync = require("../utils/catchAsync");
-const { upload } = require("../utils/uploadImage");
 const fs = require("fs");
 const saveImage = require("../utils/saveImage");
-
-exports.uploadImage = (field) => (req, res, next) => {
-  upload.single(field)(req, res, async function (err) {
-    if (err) {
-      return next(err);
-    }
-  });
-  next();
-};
 
 exports.handleCreatingPost = catchAsync(async (req, res, next) => {
   const createdAt = Date.now();
