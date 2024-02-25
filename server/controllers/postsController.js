@@ -1,11 +1,11 @@
-const sharp = require('sharp');
-const Post = require('../models/Post');
-const catchAsync = require('../utils/catchAsync');
-const { upload } = require('../utils/uploadImage');
-const fs = require('fs');
+const sharp = require("sharp");
+const Post = require("../models/Post");
+const catchAsync = require("../utils/catchAsync");
+const { upload } = require("../utils/uploadImage");
+const fs = require("fs");
 
 exports.handleCreatingPost = catchAsync(async (req, res, next) => {
-  upload.single('image')(req, res, async function (err) {
+  upload.single("image")(req, res, async function (err) {
     try {
       if (err) {
         return next(err);
@@ -26,14 +26,14 @@ exports.handleCreatingPost = catchAsync(async (req, res, next) => {
 
       if (req.file) {
         await sharp(req.file.buffer)
-          .toFormat('jpeg')
+          .toFormat("jpeg")
           .jpeg({ quality: 100 })
           .toFile(`images/posts-${req.user._id}-${createdAt}.jpeg`);
       }
 
       res.status(201).json({
-        status: 'success',
-        message: 'created successfully',
+        status: "success",
+        message: "created successfully",
       });
     } catch (error) {
       next(error);
@@ -64,8 +64,8 @@ exports.handleDeletingPost = catchAsync(async (req, res, next) => {
   fs.unlink(filePath, (err) => {});
 
   return res.status(204).json({
-    status: 'success',
-    message: 'Deleted Successfully',
+    status: "success",
+    message: "Deleted Successfully",
   });
 });
 
@@ -81,8 +81,8 @@ exports.handleLikingPost = catchAsync(async (req, res, next) => {
   await post.save();
 
   return res.status(200).json({
-    status: 'success',
-    message: 'Liked Successfully',
+    status: "success",
+    message: "Liked Successfully",
   });
 });
 
@@ -99,8 +99,8 @@ exports.handleUnlikingPost = catchAsync(async (req, res, next) => {
   await post.save();
 
   return res.status(200).json({
-    status: 'success',
-    message: 'Unliked Successfully',
+    status: "success",
+    message: "Unliked Successfully",
   });
 });
 
@@ -108,7 +108,7 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
   const posts = await Post.find();
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: posts,
   });
 });
@@ -117,7 +117,7 @@ exports.getUserPosts = catchAsync(async (req, res, next) => {
   const posts = await Post.find({ user: req.params.userId });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: posts,
   });
 });
@@ -126,7 +126,7 @@ exports.getMyPosts = catchAsync(async (req, res, next) => {
   const posts = await Post.find({ user: req.user._id });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: posts,
   });
 });
@@ -135,19 +135,19 @@ exports.getPost = catchAsync(async (req, res, next) => {
   const post = await Post.findOne({ _id: req.params.postId });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: post,
   });
 });
 
 exports.getPostLikes = catchAsync(async (req, res, next) => {
   const post = await Post.findOne({ _id: req.params.postId }).populate({
-    path: 'likes',
-    select: 'username',
+    path: "likes",
+    select: "username",
   });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: post.likes,
   });
 });
