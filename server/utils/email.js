@@ -1,6 +1,6 @@
-const nodemailer = require('nodemailer');
-const pug = require('pug');
-const { htmlToText } = require('html-to-text');
+const nodemailer = require("nodemailer");
+const pug = require("pug");
+const { htmlToText } = require("html-to-text");
 
 module.exports = class Email {
   constructor(user, url, token = null, newEmail = null) {
@@ -10,13 +10,13 @@ module.exports = class Email {
     this.from = `Simple Media <${process.env.EMAIL_FROM}>`;
     this.token = token;
     this.email = user.email;
-    this.newEmail = newEmail || ' ';
+    this.newEmail = newEmail || " ";
   }
 
   createTransport() {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       return nodemailer.createTransport({
-        service: 'SendGrid',
+        service: "SendGrid",
         auth: {
           user: process.env.SENDGRID_USER,
           pass: process.env.SENDGRID_PASS,
@@ -44,9 +44,6 @@ module.exports = class Email {
       email: this.email,
       newEmail: this.newEmail,
     });
-
-    console.log(html);
-    console.log(this.url);
 
     const mailOptions = {
       from: this.from,

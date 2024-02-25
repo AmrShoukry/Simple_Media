@@ -67,8 +67,6 @@ function checkNamingAvailability(
   } else {
     const daysRemaining = Math.ceil(days / (1000 * 60 * 60 * 24));
 
-    console.log(lastModifiedTimestamp + thirtyDaysInMilliseconds - Date.now());
-
     return `DEFINED=You-can't-update-your-${field}-again-for-${daysRemaining}-Days 400`;
   }
 
@@ -83,8 +81,6 @@ exports.handleUpdateUserData = catchAsync(async (req, res, next) => {
     lastName: req.body.lastName || user.lastName,
     username: req.body.username || user.username,
   };
-
-  console.log(newData.firstName);
 
   if (
     newData.firstName !== user.firstName ||
@@ -138,9 +134,6 @@ exports.handleUpdateUserPassword = catchAsync(async (req, res, next) => {
   const newPassword = req.body.password;
   const newPasswordConfirm = req.body.passwordConfirm;
 
-  console.log(oldPassword);
-  console.log(user.password);
-
   if (!(await compare(oldPassword, user.password))) {
     return next("DEFINED=Old-password-incorrect 400");
   }
@@ -180,10 +173,6 @@ exports.checkSelf = catchAsync(async (req, res, next) => {
 
 exports.checkUser = catchAsync(async (req, res, next) => {
   const id = req.params.userId;
-
-  console.log(req.params);
-
-  console.log(id);
 
   const userTwo = await User.findOne({ _id: id });
 

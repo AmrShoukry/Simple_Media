@@ -210,7 +210,6 @@ exports.handleCommentUnreplying = catchAsync(async (req, res, next) => {
   }
 
   const filePath = `${__dirname}/../images/replies-${user._id}-comments-${commentId}-post-${postId}-${replyCreationDate}.jpeg`;
-  console.log(filePath);
   fs.unlink(filePath, (err) => {});
 
   await reply.deleteOne();

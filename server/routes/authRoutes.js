@@ -10,6 +10,7 @@ const {
   handleVerifyEmail,
   checkLogin,
 } = require("../controllers/authController");
+const { uploadImage } = require("../controllers/imageController");
 
 const authRouter = Router();
 

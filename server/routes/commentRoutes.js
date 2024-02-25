@@ -13,7 +13,7 @@ const {
   getCommentReplies,
 } = require("../controllers/commentsController");
 const { checkLogin } = require("../controllers/authController");
-const { uploadImage } = require("../controllers/postsController");
+const { uploadImage } = require("../controllers/imageController");
 
 const commentRouter = Router({ mergeParams: true });
 

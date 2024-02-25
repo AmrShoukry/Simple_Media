@@ -9,9 +9,9 @@ const {
   getMyPosts,
   getPost,
   getPostLikes,
-  uploadImage,
 } = require("../controllers/postsController");
 const { checkLogin } = require("../controllers/authController");
+const { uploadImage } = require("../controllers/imageController");
 
 const postsRouter = Router();
 

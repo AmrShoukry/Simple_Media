@@ -18,7 +18,8 @@ const {
   checkSelf,
 } = require("../controllers/meController");
 const { handleLogout, checkLogin } = require("../controllers/authController");
-const { getMyPosts, uploadImage } = require("../controllers/postsController");
+const { getMyPosts } = require("../controllers/postsController");
+const { uploadImage } = require("../controllers/imageController");
 
 const meRouter = Router();
 
