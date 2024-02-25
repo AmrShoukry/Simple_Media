@@ -5,13 +5,11 @@ const commentSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
     required: [true, "This post must have an owner"],
-    index: true,
   },
   post: {
     type: Schema.Types.ObjectId,
     ref: "Post",
     required: [true, "This comment must be on a post"],
-    index: true,
   },
   content: {
     type: String,
@@ -40,7 +38,6 @@ const commentSchema = new Schema({
     type: Date,
     default: Date.now,
     immutable: true,
-    index: true,
   },
 });
 
