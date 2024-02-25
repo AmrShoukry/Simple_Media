@@ -2,12 +2,12 @@ const catchAsync = require("../utils/catchAsync");
 const User = require("../models/User");
 const { compare } = require("bcrypt");
 const { upload } = require("../utils/uploadImage");
-const sharp = require("sharp");
 const jwt = require("jsonwebtoken");
 const Email = require("../utils/email");
 const crypto = require("crypto");
 const validator = require("validator");
 const { promisify } = require("util");
+const saveImage = require("../utils/saveImage");
 
 function generateVerificationToken() {
   return crypto.randomBytes(20).toString("hex");
@@ -57,6 +57,10 @@ exports.handleLogin = catchAsync(async (req, res, next) => {
     email: req.body.email,
   }).select("+password");
 
+  if (!user) {
+    return next("DEFINED=User-Not-Found 400");
+  }
+
   if (user.active === "deactivated") {
     user.active = "active";
     await user.save();
@@ -72,7 +76,7 @@ exports.handleLogin = catchAsync(async (req, res, next) => {
     });
   }
 
-  return next("DEFINED=Incorrect-Credentials 400");
+  return next("DEFINED=User-Not-Found 400");
 });
 
 exports.handleSignup = catchAsync(async (req, res, next) => {
@@ -114,11 +118,8 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
       email.send("verify", "Email verification");
 
       if (req.file) {
-        await sharp(req.file.buffer)
-          .resize(200, 200)
-          .toFormat("jpeg")
-          .jpeg({ quality: 90 })
-          .toFile(`images/profilePicture-${holdingUser.username}.jpeg`);
+        // prettier-ignore
+        await saveImage(req, 200, 200, 90, `images/profilePicture-${holdingUser.username}.jpeg`);
       }
 
       res.status(201).json({
@@ -290,8 +291,6 @@ exports.checkLogin = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(" ")[1];
   }
-
-  console.log(token);
 
   if (!token) {
     return next("DEFINED=You-have-to-login-first 401");
