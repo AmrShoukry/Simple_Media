@@ -6,14 +6,14 @@ import authService from "./authService";
 // get user from localstorage
 const user = JSON.parse(localStorage.getItem('user') as string)
 
-// type User = {
-//   email: string;
-//   password: string;
-// }
+type User = {
+  email: string;
+  password: string;
+}
 
 type UserData = {
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
   password: string;
@@ -45,7 +45,26 @@ export const registerAsync = createAsyncThunk(
       const message =(error.res && error.res.data && error.res.data.message) || error.message || error.toString()
       return thunkAPI.rejectWithValue(message)
     }
-  })
+})
+
+export const loginAsync = createAsyncThunk(
+  'auth/login',
+  async (user: User, thunkAPI)=> {
+    try {
+      return await authService.login(user)
+    } catch(error: any) {
+      const message =(error.res && error.res.data && error.res.data.message) || error.message || error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+})
+
+export const logoutAsync = createAsyncThunk(
+  'auth/logout',
+  async() => {
+    await authService.logout()
+  }
+)
+
 
 const authSlice = createSlice({
   name: 'auth',
@@ -72,6 +91,25 @@ const authSlice = createSlice({
         state.isLoading = false,
         state.isError = true,
         state.isError = action.payload,
+        state.user = null
+      })
+
+      .addCase(loginAsync.pending, (state: AuthState)=> {
+        state.isLoading = true
+      })
+      .addCase(loginAsync.fulfilled, (state: AuthState, action: PayloadAction<UserData>)=> {
+        state.isLoading = false,
+        state.isSuccess = true,
+        state.user = action.payload
+      })
+      .addCase(loginAsync.rejected, (state: AuthState, action: PayloadAction<any>)=> {
+        state.isLoading = false,
+        state.isError = true,
+        state.isError = action.payload,
+        state.user = null
+      })
+
+      .addCase(logoutAsync.fulfilled, (state: AuthState) => {
         state.user = null
       })
   }

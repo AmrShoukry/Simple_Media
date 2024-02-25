@@ -1,8 +1,10 @@
-import React, { useState} from 'react';
-// import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import React, { useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { Link } from 'react-router-dom';
 import TextInput from '@/components/ui/input/TextInput';
 import Button from '@/components/ui/button/Button';
+import { reset, loginAsync } from '@/features/auth/authSlice';
 // import { userLoginAsync } from '@/features/auth/authSlice';
 
 
@@ -17,9 +19,24 @@ const Login: React.FC<Props> = () => {
     password: ''
   })
 
-  // const error  = useAppSelector(state => state.auth)
+  const { email, password} = input
 
-  // const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
+  const dispatch = useAppDispatch()
+
+  const {user, isError, isLoading, isSuccess, message} = useAppSelector(state => state.auth)
+  
+  useEffect(()=> {
+    if(isError){
+      console.log(message)
+    }
+    if(isSuccess || user){
+      navigate('/home')
+    }
+
+    dispatch(reset())
+  }, [user, isError, navigate, isSuccess, message, dispatch])
 
   const handInput =(e: React.ChangeEvent<HTMLInputElement>)=> {
     const name = (e.target as HTMLInputElement).name
@@ -27,11 +44,18 @@ const Login: React.FC<Props> = () => {
     setInput(values => ({...values, [name]: value}))
   }
 
-  const handleSubmit =( e: React.FormEvent<HTMLFormElement>)=> {
+  const handleSubmit =(e: React.FormEvent<HTMLFormElement>)=> {
     e.preventDefault()
-    // dispatch(userLoginAsync(input))
-    // console.log(error); 
+      const userData = {
+        email,
+        password
+      }
+      dispatch(loginAsync(userData))
     
+  }
+
+  if(isLoading){
+    return <span>loading...</span>
   }
 
   return (
@@ -46,7 +70,7 @@ const Login: React.FC<Props> = () => {
               placeholder="Enter your email"
               type="email"
               name='email'
-              value={input.email}
+              value={email}
               handleInput={handInput}
               inputId="email"
               label="Email"
@@ -57,7 +81,7 @@ const Login: React.FC<Props> = () => {
               placeholder="Enter your password"
               type="password"
               name='password'
-              value={input.password}
+              value={password}
               handleInput={handInput}
               inputId="pwd"
               label="Password"

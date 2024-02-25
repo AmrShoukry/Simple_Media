@@ -1,9 +1,9 @@
 import React, { useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import TextInput from '@/components/ui/input/TextInput';
 import Button from '@/components/ui/button/Button';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { useNavigate } from 'react-router-dom';
 import { registerAsync, reset } from '@/features/auth/authSlice';
 
 
@@ -14,8 +14,8 @@ interface Props {
 
 const Register: React.FC<Props> = () => {
 
-  const [firstname, setFirstname] = useState('')
-  const [lastname, setLastname] = useState('')
+  const [firstName, setFirstname] = useState('')
+  const [lastName, setLastname] = useState('')
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -57,7 +57,7 @@ const Register: React.FC<Props> = () => {
       console.log(message)
     }
     if(isSuccess || user){
-      navigate('/home')
+      navigate('/login')
     }
 
     dispatch(reset())
@@ -70,8 +70,8 @@ const Register: React.FC<Props> = () => {
       alert('password mismatch')
     } else {
       const userData = {
-        firstname, 
-        lastname, 
+        firstName, 
+        lastName, 
         username, 
         email, 
         password,
@@ -97,7 +97,7 @@ const Register: React.FC<Props> = () => {
               placeholder="Enter your firstname"
               type="text"
               name='fname'
-              value={firstname}
+              value={firstName}
               handleInput={handleFirstName}
               inputId="fname"
               label="firstname"
@@ -108,7 +108,7 @@ const Register: React.FC<Props> = () => {
               placeholder="Enter your lastname"
               type="text"
               name='lname'
-              value={lastname}
+              value={lastName}
               handleInput={handleLastname}
               inputId="lname"
               label="Lastname"
