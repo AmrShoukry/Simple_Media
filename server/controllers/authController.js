@@ -1,38 +1,38 @@
-const catchAsync = require("../utils/catchAsync");
-const User = require("../models/User");
-const { compare } = require("bcrypt");
-const { upload } = require("../utils/uploadImage");
-const sharp = require("sharp");
-const jwt = require("jsonwebtoken");
-const Email = require("../utils/email");
-const crypto = require("crypto");
-const validator = require("validator");
-const { promisify } = require("util");
+const catchAsync = require('../utils/catchAsync');
+const User = require('../models/User');
+const { compare } = require('bcrypt');
+const { upload } = require('../utils/uploadImage');
+const sharp = require('sharp');
+const jwt = require('jsonwebtoken');
+const Email = require('../utils/email');
+const crypto = require('crypto');
+const validator = require('validator');
+const { promisify } = require('util');
 
 function generateVerificationToken() {
-  return crypto.randomBytes(20).toString("hex");
+  return crypto.randomBytes(20).toString('hex');
 }
 
 function signToken(userId) {
   const payload = { userId };
   const secretKey = process.env.SECRET_KEY;
   const options = {
-    expiresIn: "30d",
+    expiresIn: '30d',
   };
   return jwt.sign(payload, secretKey, options);
 }
 
 function signCookie(req, res, token, expirationDuration) {
-  res.cookie("jwt", token, {
+  res.cookie('jwt', token, {
     expires: new Date(expirationDuration),
     httpOnly: true,
-    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
   });
 }
 
 function checkTokenValidity(req, verificationToken) {
   if (!verificationToken) {
-    return "DEFINED=Invalid-Token 400";
+    return 'DEFINED=Invalid-Token 400';
   }
 
   const creationTime = req.body.creationTime;
@@ -41,7 +41,7 @@ function checkTokenValidity(req, verificationToken) {
   const timeDifference = currentTime - creationTime;
 
   if (timeDifference > expirationDuration) {
-    return "DEFINED=Token-Expired 400";
+    return 'DEFINED=Token-Expired 400';
   }
 
   return true;
@@ -49,16 +49,16 @@ function checkTokenValidity(req, verificationToken) {
 
 exports.handleLogin = catchAsync(async (req, res, next) => {
   if (!req.body.email || !req.body.password) {
-    return next("DEFINED=Incorrect-credentials 400");
+    return next('DEFINED=Incorrect-credentials 400');
   }
 
   const user = await User.findOne({
-    $or: [{ active: "active" }, { active: "deactivated" }],
+    $or: [{ active: 'active' }, { active: 'deactivated' }],
     email: req.body.email,
-  }).select("+password");
+  }).select('+password');
 
-  if (user.active === "deactivated") {
-    user.active = "active";
+  if (user.active === 'deactivated') {
+    user.active = 'active';
     await user.save();
   }
 
@@ -67,23 +67,23 @@ exports.handleLogin = catchAsync(async (req, res, next) => {
     signCookie(req, res, token, Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     return res.status(200).json({
-      status: "success",
+      status: 'success',
       token: token,
     });
   }
 
-  return next("DEFINED=Incorrect-Credentials 400");
+  return next('DEFINED=Incorrect-Credentials 400');
 });
 
 exports.handleSignup = catchAsync(async (req, res, next) => {
-  upload.single("profilePicture")(req, res, async function (err) {
+  upload.single('profilePicture')(req, res, async function (err) {
     try {
       if (err) {
         return next(err);
       }
       let holdingUser = await User.findOne({
         email: req.body.email,
-        active: "holding",
+        active: 'holding',
       });
 
       let verificationToken = holdingUser?.token || undefined;
@@ -99,8 +99,8 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
           passwordConfirm: req.body.passwordConfirm,
           profilePicture: req.file
             ? `profilePicture-${req.body.username}.jpeg`
-            : "default.jpeg",
-          active: "holding",
+            : 'default.jpeg',
+          active: 'holding',
           token: verificationToken,
         });
       }
@@ -108,21 +108,21 @@ exports.handleSignup = catchAsync(async (req, res, next) => {
       const email = new Email(
         holdingUser,
         `http://localhost:8000/auth/verifyAccount`,
-        verificationToken
+        verificationToken,
       );
 
-      email.send("verify", "Email verification");
+      email.send('verify', 'Email verification');
 
       if (req.file) {
         await sharp(req.file.buffer)
           .resize(200, 200)
-          .toFormat("jpeg")
+          .toFormat('jpeg')
           .jpeg({ quality: 90 })
           .toFile(`images/profilePicture-${holdingUser.username}.jpeg`);
       }
 
       res.status(201).json({
-        status: "Email Sent successfully",
+        status: 'Email Sent successfully',
       });
     } catch (err) {
       return next(err);
@@ -142,22 +142,22 @@ exports.handleAccountVerification = catchAsync(async (req, res, next) => {
   });
 
   if (user) {
-    user.active = "active";
+    user.active = 'active';
     user.token = null;
     await user.save();
 
     return res.status(200).json({
-      status: "success",
-      message: "Please Login using your newly verified email",
+      status: 'success',
+      message: 'Please Login using your newly verified email',
     });
   }
 
-  return next("DEFINED=Invalid-Token 400");
+  return next('DEFINED=Invalid-Token 400');
 });
 
 exports.handleForgetPassword = catchAsync(async (req, res, next) => {
   const useremail = req.body.email;
-  const user = await User.findOne({ active: "active", email: useremail });
+  const user = await User.findOne({ active: 'active', email: useremail });
 
   if (!user) {
     return next("DEFINED=This-email-doesn't-exist 401");
@@ -172,14 +172,14 @@ exports.handleForgetPassword = catchAsync(async (req, res, next) => {
   const email = new Email(
     user,
     `http://localhost:8000/auth/resetPassword}`,
-    verificationToken
+    verificationToken,
   );
 
-  email.send("change", "Change Password");
+  email.send('change', 'Change Password');
 
   res.status(200).json({
-    status: "successfull",
-    message: "email sent successfully to change password",
+    status: 'successfull',
+    message: 'email sent successfully to change password',
   });
 });
 
@@ -191,7 +191,7 @@ exports.handleResetPassword = catchAsync(async (req, res, next) => {
   }
 
   const user = await User.findOne({
-    active: "active",
+    active: 'active',
     token: verificationToken,
   });
 
@@ -205,17 +205,17 @@ exports.handleResetPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   return res.status(200).json({
-    status: "success",
-    message: "password changed succsessfully",
+    status: 'success',
+    message: 'password changed succsessfully',
   });
 });
 
 exports.handleLogout = catchAsync(async (req, res, next) => {
-  signCookie(req, res, "", Date.now() + 1 * 1000);
+  signCookie(req, res, '', Date.now() + 1 * 1000);
 
   return res.status(200).json({
-    status: "success",
-    message: "logged out successfully",
+    status: 'success',
+    message: 'logged out successfully',
   });
 });
 
@@ -224,17 +224,17 @@ exports.handleRequestUpdateEmail = catchAsync(async (req, res, next) => {
   const newEmail = req.body.newEmail;
 
   if (!validator.isEmail(newEmail)) {
-    return next("DEFINED=Invalid-Email-Address 400");
+    return next('DEFINED=Invalid-Email-Address 400');
   }
 
   const existingUser = await User.findOne({ email: newEmail });
   if (existingUser) {
     return next(
-      "DEFINED=This-New-Email-Already-Exists-In-Our-Database-Please-Use-Another-One 400"
+      'DEFINED=This-New-Email-Already-Exists-In-Our-Database-Please-Use-Another-One 400',
     );
   }
 
-  const user = await User.findOne({ active: "active", email: emailuser });
+  const user = await User.findOne({ active: 'active', email: emailuser });
   const verificationToken = generateVerificationToken();
 
   user.token = verificationToken;
@@ -245,13 +245,13 @@ exports.handleRequestUpdateEmail = catchAsync(async (req, res, next) => {
     user,
     `http://localhost:8000/auth/verifyEmail`,
     verificationToken,
-    newEmail
+    newEmail,
   );
 
-  email.send("email", "Change Email");
+  email.send('email', 'Change Email');
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     message: `Email sent successfully to ${newEmail} to verify it`,
   });
 });
@@ -274,7 +274,7 @@ exports.handleVerifyEmail = catchAsync(async (req, res, next) => {
   await user.save();
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     message: `Email updated successfully from ${email} to ${newEmail}`,
   });
 });
@@ -286,26 +286,26 @@ exports.checkLogin = catchAsync(async (req, res, next) => {
     token = req.cookies.jwt;
   } else if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    req.headers.authorization.startsWith('Bearer')
   ) {
-    token = req.headers.authorization.split(" ")[1];
+    token = req.headers.authorization.split(' ')[1];
   }
 
   console.log(token);
 
   if (!token) {
-    return next("DEFINED=You-have-to-login-first 401");
+    return next('DEFINED=You-have-to-login-first 401');
   }
 
   const userDecoded = await promisify(jwt.verify)(
     token,
-    process.env.SECRET_KEY
+    process.env.SECRET_KEY,
   );
 
   const user = await User.findById(userDecoded.userId);
 
   if (!user) {
-    return next("DEFINED=Invalid-token-please-login-again 401");
+    return next('DEFINED=Invalid-token-please-login-again 401');
   }
 
   req.user = user;

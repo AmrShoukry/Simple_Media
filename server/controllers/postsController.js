@@ -1,157 +1,153 @@
-const sharp = require("sharp");
-const Post = require("../models/Post");
-const catchAsync = require("../utils/catchAsync");
-const { upload } = require("../utils/uploadImage");
+const sharp = require('sharp');
+const Post = require('../models/Post');
+const catchAsync = require('../utils/catchAsync');
+const { upload } = require('../utils/uploadImage');
 const fs = require('fs');
 
+exports.handleCreatingPost = catchAsync(async (req, res, next) => {
+  upload.single('image')(req, res, async function (err) {
+    try {
+      if (err) {
+        return next(err);
+      }
+      const createdAt = Date.now();
+      const newPost = await Post.create({
+        user: req.user._id,
+        content: req.body.content,
+        image: `posts-${req.user._id}-${createdAt}.jpeg`,
+        createdAt: createdAt,
+      });
 
-exports.handleCreatingPost = catchAsync( async (req, res, next) => {
-    upload.single('image')(req, res, async function(err) {
-        try {
-            if (err) {
-              return next(err);
-            }
-            const createdAt = Date.now()
-            const newPost = await Post.create({
-                user: req.user._id,
-                content: req.body.content,
-                image: `posts-${req.user._id}-${createdAt}.jpeg`,
-                createdAt: createdAt
-            })
+      const user = req.user;
 
-            const user = req.user;
+      user.posts.push(newPost._id);
 
-            user.posts.push(newPost._id)
+      await user.save();
 
-            await user.save()
+      if (req.file) {
+        await sharp(req.file.buffer)
+          .toFormat('jpeg')
+          .jpeg({ quality: 100 })
+          .toFile(`images/posts-${req.user._id}-${createdAt}.jpeg`);
+      }
 
-            if (req.file) {
-                await sharp(req.file.buffer)
-                  .toFormat("jpeg")
-                  .jpeg({ quality: 100 })
-                  .toFile(`images/posts-${req.user._id}-${createdAt}.jpeg`);
-              }
-        
-            res.status(201).json({
-                status: 'success',
-                message: 'created successfully'
-            })
-        } catch (error) {
-            next(error)
-        }
-    })
+      res.status(201).json({
+        status: 'success',
+        message: 'created successfully',
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
 });
 
-exports.handleDeletingPost = catchAsync( async (req, res, next) => {
-    const postId = req.params.postId;
-    const post = await Post.findOne({'_id': postId});
-    const postCreationDate = post.createdAt.getTime();
-    const user = req.user;
+exports.handleDeletingPost = catchAsync(async (req, res, next) => {
+  const postId = req.params.postId;
+  const post = await Post.findOne({ _id: postId });
+  const postCreationDate = post.createdAt.getTime();
+  const user = req.user;
 
-    if (user._id.toString() !== post.user.toString() ) {
-        return next("DEFINED=You-can't-delete-other-users-posts 403")
-    }
+  if (user._id.toString() !== post.user.toString()) {
+    return next("DEFINED=You-can't-delete-other-users-posts 403");
+  }
 
-    await post.deleteOne();
-    
-    const index = user.posts.indexOf(postId);
-    if (index !== -1) {
-        user.posts.splice(index, 1);
-    }
-  
-    await user.save()
+  await post.deleteOne();
 
-    const filePath = `${__dirname}/../images/posts-${user._id}-${postCreationDate}.jpeg`
-    fs.unlink(filePath, (err) => {})
+  const index = user.posts.indexOf(postId);
+  if (index !== -1) {
+    user.posts.splice(index, 1);
+  }
 
-    return res.status(204).json({
-        status: 'success',
-        message: 'Deleted Successfully'
-    })
-})
+  await user.save();
 
-exports.handleLikingPost = catchAsync( async (req, res, next) => {
-    const postId = req.params.postId;
-    const post = await Post.findOne({'_id': postId});
-    const user = req.user
+  const filePath = `${__dirname}/../images/posts-${user._id}-${postCreationDate}.jpeg`;
+  fs.unlink(filePath, (err) => {});
 
-    if (!post.likes.includes(user._id)) {
-        post.likes.push(user._id);
-    }
+  return res.status(204).json({
+    status: 'success',
+    message: 'Deleted Successfully',
+  });
+});
 
-    await post.save()
+exports.handleLikingPost = catchAsync(async (req, res, next) => {
+  const postId = req.params.postId;
+  const post = await Post.findOne({ _id: postId });
+  const user = req.user;
 
-    return res.status(200).json({
-        status: 'success',
-        message: 'Liked Successfully'
-    })
-  
-})
+  if (!post.likes.includes(user._id)) {
+    post.likes.push(user._id);
+  }
 
-exports.handleUnlikingPost = catchAsync( async (req, res, next) => {
-    const postId = req.params.postId;
-    const post = await Post.findOne({'_id': postId});
-    const user = req.user
+  await post.save();
 
-    const index = post.likes.indexOf(user._id);
-    if (index !== -1) {
-        post.likes.splice(index, 1);
-    }
+  return res.status(200).json({
+    status: 'success',
+    message: 'Liked Successfully',
+  });
+});
 
-    await post.save()
+exports.handleUnlikingPost = catchAsync(async (req, res, next) => {
+  const postId = req.params.postId;
+  const post = await Post.findOne({ _id: postId });
+  const user = req.user;
 
-    return res.status(200).json({
-        status: 'success',
-        message: 'Unliked Successfully'
-    })
-  
-})
+  const index = post.likes.indexOf(user._id);
+  if (index !== -1) {
+    post.likes.splice(index, 1);
+  }
 
+  await post.save();
 
-exports.getAllPosts = catchAsync( async (req, res, next) => {
-    const posts = await Post.find()
+  return res.status(200).json({
+    status: 'success',
+    message: 'Unliked Successfully',
+  });
+});
 
-    res.status(200).json({
-        status: 'success',
-        data: posts
-    })
-})
+exports.getAllPosts = catchAsync(async (req, res, next) => {
+  const posts = await Post.find();
 
-exports.getUserPosts = catchAsync( async(req, res, next) => {
-    const posts = await Post.find({"user": req.params.userId})
+  res.status(200).json({
+    status: 'success',
+    data: posts,
+  });
+});
 
-    res.status(200).json({
-        status: 'success',
-        data: posts
-    })
-})
+exports.getUserPosts = catchAsync(async (req, res, next) => {
+  const posts = await Post.find({ user: req.params.userId });
 
-exports.getMyPosts = catchAsync( async(req, res, next) => {
-    const posts = await Post.find({"user": req.user._id})
+  res.status(200).json({
+    status: 'success',
+    data: posts,
+  });
+});
 
-    res.status(200).json({
-        status: 'success',
-        data: posts
-    })
-})
+exports.getMyPosts = catchAsync(async (req, res, next) => {
+  const posts = await Post.find({ user: req.user._id });
 
-exports.getPost = catchAsync( async(req, res, next) => {
-    const post = await Post.findOne({"_id": req.params.postId})
+  res.status(200).json({
+    status: 'success',
+    data: posts,
+  });
+});
 
-    res.status(200).json({
-        status: 'success',
-        data: post
-    })
-})
+exports.getPost = catchAsync(async (req, res, next) => {
+  const post = await Post.findOne({ _id: req.params.postId });
+
+  res.status(200).json({
+    status: 'success',
+    data: post,
+  });
+});
 
 exports.getPostLikes = catchAsync(async (req, res, next) => {
-    const post = await Post.findOne({"_id": req.params.postId}).populate({
-        path: 'likes',
-        select: 'username'
-    })
+  const post = await Post.findOne({ _id: req.params.postId }).populate({
+    path: 'likes',
+    select: 'username',
+  });
 
-    res.status(200).json({
-        status: 'success',
-        data: post.likes
-    })
-})
+  res.status(200).json({
+    status: 'success',
+    data: post.likes,
+  });
+});

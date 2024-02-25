@@ -1,29 +1,29 @@
 module.exports = (err, req, res, next) => {
-  if (err.name && err.name === "ValidationError") {
+  if (err.name && err.name === 'ValidationError') {
     return res.status(400).json({
-      status: "validation error",
+      status: 'validation error',
     });
   }
   const errorString = JSON.stringify(err).slice(1, -1);
-  if (errorString.startsWith("DEFINED=")) {
-    const messageStatus = errorString.split(" ");
+  if (errorString.startsWith('DEFINED=')) {
+    const messageStatus = errorString.split(' ');
     const statusCode = parseInt(messageStatus[1]);
-    const messageEncoded = messageStatus[0].split("=")[1];
-    const message = messageEncoded.split("-").join(" ");
+    const messageEncoded = messageStatus[0].split('=')[1];
+    const message = messageEncoded.split('-').join(' ');
 
     return res.status(statusCode).json({
-      status: "error",
+      status: 'error',
       message: message,
     });
   }
-  if (errorString.startsWith("Cast to ObjectId")) {
+  if (errorString.startsWith('Cast to ObjectId')) {
     return res.status(400).json({
-      status: "error",
-      message: "Invalid Id",
+      status: 'error',
+      message: 'Invalid Id',
     });
   }
   return res.status(400).json({
-    status: "error",
+    status: 'error',
     message: err,
   });
 };
