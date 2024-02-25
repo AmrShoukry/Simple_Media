@@ -1,9 +1,9 @@
 const catchAsync = require("../utils/catchAsync");
 const User = require("../models/User");
-const { hash, compare } = require("bcrypt");
+const { compare } = require("bcrypt");
 const { upload } = require("../utils/uploadImage");
-const sharp = require("sharp");
 const fs = require("fs");
+const saveImage = require("../utils/saveImage");
 
 async function getMy(req, res, action) {
   const data = await User.find({ _id: req.user._id })
@@ -129,11 +129,8 @@ exports.handleUpdateUserData = catchAsync(async (req, res, next) => {
       await user.save();
 
       if (req.file) {
-        await sharp(req.file.buffer)
-          .resize(200, 200)
-          .toFormat("jpeg")
-          .jpeg({ quality: 90 })
-          .toFile(`images/profilePicture-${user.username}.jpeg`);
+        // prettier-ignore
+        await saveImage(req, 200, 200, 90, `images/profilePicture-${user.username}.jpeg`)
       }
 
       res.status(200).json({

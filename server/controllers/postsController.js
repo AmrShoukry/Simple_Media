@@ -1,8 +1,8 @@
-const sharp = require("sharp");
 const Post = require("../models/Post");
 const catchAsync = require("../utils/catchAsync");
 const { upload } = require("../utils/uploadImage");
 const fs = require("fs");
+const saveImage = require("../utils/saveImage");
 
 exports.handleCreatingPost = catchAsync(async (req, res, next) => {
   upload.single("image")(req, res, async function (err) {
@@ -25,10 +25,8 @@ exports.handleCreatingPost = catchAsync(async (req, res, next) => {
       await user.save();
 
       if (req.file) {
-        await sharp(req.file.buffer)
-          .toFormat("jpeg")
-          .jpeg({ quality: 100 })
-          .toFile(`images/posts-${req.user._id}-${createdAt}.jpeg`);
+        // prettier-ignore
+        await saveImage(req, null, null, 95, `images/posts-${req.user._id}-${createdAt}.jpeg`)
       }
 
       res.status(201).json({
