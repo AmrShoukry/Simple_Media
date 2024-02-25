@@ -1,5 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '@/app/hooks';
+import { reset, logoutAsync } from '@/features/auth/authSlice';
 import { GoHome } from "react-icons/go";
 import { CiLogout } from "react-icons/ci";
 import { FaRegUser } from "react-icons/fa";
@@ -12,6 +14,19 @@ interface Props {
 }
 
 const SideNav: React.FC<Props> = () => {
+
+  const navigate = useNavigate()
+
+  const dispatch = useAppDispatch()
+
+  // const { user } = useAppSelector(state => state.auth.user)
+
+  const handleLogout =()=> {
+    dispatch(logoutAsync())
+    dispatch(reset())
+    navigate('/login')
+  }
+
   return (
     <aside className='w-280 bg-pry fixed inset-y-0 flex flex-col text-textPry'>
       <nav className='overflow-y-auto w-full pt-7'>
@@ -31,7 +46,7 @@ const SideNav: React.FC<Props> = () => {
             </Link>
           </li>
           <li className='text-16 font-bold'>
-            <button className='flex items-center py-4 gap-x-2'>
+            <button onClick={handleLogout} className='flex items-center py-4 gap-x-2'>
               <CiLogout  />
               <span>Logout</span>
             </button>
