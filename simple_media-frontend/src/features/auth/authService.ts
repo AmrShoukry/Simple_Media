@@ -37,7 +37,9 @@ const login = async(user: User) => {
 }
 
 const logout = async() => {
+  const res = await axios.post(`${API_URL}/auth/logout`)
   localStorage.removeItem('user')
+  return res.data
 }
 
 const authService = {
