@@ -5,6 +5,7 @@ const postSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
     required: [true, "This post must have an owner"],
+    index: true,
   },
   content: {
     type: String,
@@ -28,6 +29,7 @@ const postSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+    immutable: true,
   },
 });
 

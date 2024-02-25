@@ -54,7 +54,7 @@ exports.handleLogin = catchAsync(async (req, res, next) => {
   const user = await User.findOne({
     $or: [{ active: "active" }, { active: "deactivated" }],
     email: req.body.email,
-  }).select("+password");
+  });
 
   if (!user) {
     return next("DEFINED=User-Not-Found 400");

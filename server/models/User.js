@@ -21,6 +21,7 @@ const userSchema = new Schema({
       /^[a-z0-9]+$/,
       "Username must contain lowercase characters and numbers only",
     ],
+    // index: true,
   },
   email: {
     type: String,
@@ -28,6 +29,7 @@ const userSchema = new Schema({
     unique: [true, "This email already exists"],
     validate: [validator.isEmail, "This email is invalid"],
     lowercase: true,
+    index: true,
   },
   password: {
     type: String,
@@ -75,7 +77,6 @@ const userSchema = new Schema({
       ref: "User",
     },
   ],
-
   posts: [
     {
       type: Schema.Types.ObjectId,
@@ -89,6 +90,7 @@ const userSchema = new Schema({
   },
   token: {
     type: String,
+    index: true,
   },
   craetedAt: {
     type: Date,
@@ -113,6 +115,10 @@ userSchema.pre("save", async function (next) {
 
   next();
 });
+
+userSchema.index({ active: 1, email: 1 });
+userSchema.index({ active: 1, token: 1 });
+userSchema.index({ email: 1, token: 1 });
 
 const User = model("User", userSchema);
 
