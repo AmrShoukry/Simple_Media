@@ -3,7 +3,8 @@ import { MdClose } from "react-icons/md";
 import { GoPencil } from "react-icons/go";
 import Avatar from '../avatar/Avatar';
 import { useAppDispatch } from '@/app/hooks';
-import { createPost, toggleModal } from '@/features/posts/postSlice';
+import { toggleModal, postAsync } from '@/features/posts/postSlice';
+// import 
 import './modal.scss'
 
 interface Props {
@@ -12,7 +13,9 @@ interface Props {
 
 const Modal: React.FC<Props> = () => {
 
-  const [postText, setPostText] = useState('')
+  const [body, setBody] = useState('')
+
+  // const [token, setToken] = useState()
 
   const dispatch = useAppDispatch()
 
@@ -21,14 +24,18 @@ const Modal: React.FC<Props> = () => {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setPostText(e.target.value);
+    setBody(e.target.value);
   };
 
   const handleSubmit =(e: React.FormEvent<HTMLFormElement>)=> {
     e.preventDefault()
-    dispatch(createPost(postText))
-    console.log(postText)
-    setPostText('')
+    // dispatch(createPost(postText))
+    const newPost = {
+      body
+    }
+    dispatch(postAsync(newPost))
+    console.log(body)
+    setBody('')
     closeModal()
   }
 
@@ -49,7 +56,7 @@ const Modal: React.FC<Props> = () => {
           <form onSubmit={handleSubmit} className=''>
             <div className='modal_input pl-8 pr-7'>
               <textarea 
-                value={postText} 
+                value={body} 
                 name='post'
                 id='post'
                 placeholder={`Share what's on your mind ${'Amr'}...`}
@@ -62,9 +69,9 @@ const Modal: React.FC<Props> = () => {
             <div 
               className="modal_footer items-center bottom-0 flex justify-end absolute left-0 py-4 px-5">
               <button 
-                disabled={!postText.trim()} 
+                disabled={!body.trim()} 
                 className={
-                `bg-pry text-grey4 py-2 px-7 rounded-lg ${!postText.trim() && 'bg-gray-400'}`
+                `bg-pry text-grey4 py-2 px-7 rounded-lg ${!body.trim() && 'bg-gray-400'}`
               }>
                 Post
               </button>

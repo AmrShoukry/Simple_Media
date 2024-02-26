@@ -50,7 +50,7 @@ const Login: React.FC<Props> = () => {
         email,
         password
       }
-      dispatch(loginAsync(userData))
+      dispatch(loginAsync(userData)) 
     
   }
 

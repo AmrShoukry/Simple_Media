@@ -1,4 +1,12 @@
+// import axios from '../../services';
 import axios from "axios";
+
+type Data = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+}
 
 type UserData = {
   firstName: string;
@@ -7,12 +15,26 @@ type UserData = {
   email: string;
   password: string;
   passwordConfirm: string;
+  data?: Data;
 }
+
+// export type UserDetails = {
+//   user: UserData;
+//   data: {
+//     firstName: string;
+//     lastName: string;
+//     email: string;
+//     username: string;
+//   }
+// }
   // "proxy": "http://localhost:8000",
 interface User {
   email: string;
   password: string;
+  data?: Data;
+  // token: string;
 }
+
 
 const API_URL = 'http://localhost:8000'
 
@@ -30,10 +52,10 @@ const login = async(user: User) => {
   const res = await axios.post(`${API_URL}/auth/login`, user)
 
   if(res.data){
-    localStorage.setItem('user', JSON.stringify(res.data))
+    localStorage.setItem('user', JSON.stringify(res.data.token))
   }
 
-  return res.data
+  return res.data as User
 }
 
 const logout = async() => {
@@ -42,10 +64,28 @@ const logout = async() => {
   return res.data
 }
 
+const forgetPassword = async(userEmail: string)=> {
+  const res = await axios.post(`${API_URL}/auth/forgetPassword`, userEmail)
+  return res.data
+}
+
+const getUserData = async()=> {
+  const res = await axios.get(`${API_URL}/me/data`, {
+    headers: {
+      Authorization : `Bearer ${JSON.parse(localStorage.getItem('user') as string)}`
+    }
+  })
+  return res.data as UserData
+}
+
+// const getUserData = async() => {}
+
 const authService = {
   register,
   login,
-  logout
+  logout,
+  forgetPassword,
+  getUserData
 }
 
 export default authService;

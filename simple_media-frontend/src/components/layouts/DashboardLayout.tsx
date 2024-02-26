@@ -1,9 +1,10 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import SideNav from '../dashboard/SideNav';
 import TopNav from '../dashboard/TopNav';
 import Modal from '../ui/modal/Modal';
 import { useAppSelector } from '@/app/hooks';
+// import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import './layout.scss'
 
 
@@ -14,6 +15,24 @@ interface Props {
 const DashboardLayout: React.FC<Props> = () => {
 
   const showModal = useAppSelector(state => state.posts.showModal)
+
+  // const dispatch = useAppDispatch()
+
+  const user = useAppSelector(state => state.auth.user)
+
+  // const navigate = useNavigate()
+
+  if(!user) {
+    return(
+      <div className='w-full h-screen flex items-center justify-center'>
+        <div className='text-center'>
+          <h2 className='text-3xl font-bold text-red-500'>Welcome to Simple_Media!!!</h2>
+          <Link to={'/login'} className='text-blue-700 italic'>login to get started</Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <>
       <main className='w-full min-h-screen flex'>
