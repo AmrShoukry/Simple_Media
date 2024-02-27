@@ -60,13 +60,22 @@ const forgetPassword = async(userEmail: string)=> {
   return res.data
 }
 
-const getUserData = async()=> {
+// const getUserData = async()=> {
+//   const res = await axios.get(`${API_URL}/me/data`, {
+//     headers: {
+//       Authorization : `Bearer ${localStorage.getItem('user')}`
+//     }
+//   })
+//   return res.data as UserData
+// }
+const getUserData =async()=> {
+  const token = JSON.parse(localStorage.getItem('user') as string)
   const res = await axios.get(`${API_URL}/me/data`, {
     headers: {
-      Authorization : `Bearer ${localStorage.getItem('user')}`
+      Authorization: `Bearer ${token}`
     }
   })
-  return res.data as UserData
+  return res.data
 }
 
 const authService = {

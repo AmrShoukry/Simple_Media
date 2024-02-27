@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 // import Avatar from '../ui/avatar/Avatar';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
-// import { getUserAsync } from '@/features/auth/authSlice';
+import { getUserAsync } from '@/features/auth/authSlice';
 
 
 interface Props {
@@ -15,9 +15,9 @@ const TopNav: React.FC<Props> = () => {
 
   const user = useAppSelector(state => state.auth)
   
-  // useEffect(()=> {
-  //   dispatch(getUserAsync())
-  // }, [dispatch])
+  useEffect(()=> {
+    dispatch(getUserAsync())
+  }, [dispatch])
   
   console.log(user.user)
 //  console.log(user.isSuccess)
