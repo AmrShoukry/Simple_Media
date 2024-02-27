@@ -4,6 +4,7 @@ const {
   getUserFollowing,
   getUserBlockers,
   getUserBlocking,
+  getUserData,
 } = require("../controllers/userController");
 const { checkLogin } = require("../controllers/authController");
 const { checkUser } = require("../controllers/meController");
@@ -19,5 +20,6 @@ userRouter.route("/following").get(getUserFollowing);
 userRouter.route("/blockers").get(getUserBlockers);
 userRouter.route("/blocking").get(getUserBlocking);
 userRouter.route("/posts").get(getUserPosts);
+userRouter.route("/data").get(getUserData);
 
 module.exports = userRouter;

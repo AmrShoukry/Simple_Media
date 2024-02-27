@@ -41,8 +41,8 @@ const commentSchema = new Schema({
   },
 });
 
-commentSchema.index({ _id: 1, parentComment: 1 });
-commentSchema.index({ post: 1, parentComment: 1 });
+// commentSchema.index({ _id: 1, parentComment: 1 });
+// commentSchema.index({ post: 1, parentComment: 1 });
 
 const Comment = model("Comment", commentSchema);
 

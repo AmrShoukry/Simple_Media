@@ -2,14 +2,9 @@ const catchAsync = require("../utils/catchAsync");
 const User = require("../models/User");
 
 async function getUser(req, res, action) {
-  const data = await User.find({ _id: req.params.userId })
-    .populate({
-      path: action,
-      select: "username",
-    })
-    .select(action);
+  const data = await User.find({ _id: req.params.userId }).select(action);
 
-  res.status(200).json({
+  return res.status(200).json({
     status: "success",
     data: data,
   });
@@ -29,4 +24,15 @@ exports.getUserBlockers = catchAsync(async (req, res, next) => {
 
 exports.getUserBlocking = catchAsync(async (req, res, next) => {
   return await getUser(req, res, "blocking");
+});
+
+exports.getUserData = catchAsync(async (req, res, next) => {
+  const data = await User.find({ _id: req.params.userId }).select(
+    "username profilePicture"
+  );
+
+  return res.status(200).json({
+    status: "success",
+    data: data,
+  });
 });

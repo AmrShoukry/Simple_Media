@@ -29,7 +29,7 @@ const userSchema = new Schema({
     unique: [true, "This email already exists"],
     validate: [validator.isEmail, "This email is invalid"],
     lowercase: true,
-    index: true,
+    // index: true,
   },
   password: {
     type: String,
@@ -90,7 +90,7 @@ const userSchema = new Schema({
   },
   token: {
     type: String,
-    index: true,
+    // index: true,
   },
   craetedAt: {
     type: Date,
@@ -116,13 +116,15 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.index({ active: 1, email: 1 });
-userSchema.index({ active: 1, token: 1 });
-userSchema.index({ email: 1, token: 1 });
+// userSchema.index({ active: 1, email: 1 });
+// userSchema.index({ active: 1, token: 1 });
+// userSchema.index({ email: 1, token: 1 });
 
-userSchema.pre("find", function () {
-  this.populate("followers following blockers blocking", "username");
-});
+// userSchema.index({ _id: 1 });
+
+// userSchema.pre("find", function () {
+//   this.populate("followers following blockers blocking", "username");
+// });
 
 const User = model("User", userSchema);
 

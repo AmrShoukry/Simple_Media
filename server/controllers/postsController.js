@@ -96,6 +96,8 @@ exports.handleUnlikingPost = catchAsync(async (req, res, next) => {
 exports.getAllPosts = catchAsync(async (req, res, next) => {
   const posts = await Post.find();
 
+  console.log("what??");
+
   res.status(200).json({
     status: "success",
     data: posts,
