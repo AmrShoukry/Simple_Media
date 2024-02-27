@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { nanoid } from '@reduxjs/toolkit';
 import { MdClose } from "react-icons/md";
 import { GoPencil } from "react-icons/go";
 import Avatar from '../avatar/Avatar';
@@ -17,23 +18,24 @@ const Modal: React.FC<Props> = (props) => {
 
   const { firstname, lastname, username, closeModal } = props;
 
-  const [body, setBody] = useState('')
+  const [content, setContent] = useState('')
 
   const dispatch = useAppDispatch()
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setBody(e.target.value);
+    setContent(e.target.value);
   };
 
   const handleSubmit =(e: React.FormEvent<HTMLFormElement>)=> {
     e.preventDefault()
     // dispatch(createPost(postText))
     const newPost = {
-      body
+      id: nanoid(6),
+      content
     }
     dispatch(postAsync(newPost))
-    console.log(body)
-    setBody('')
+    console.log(content) 
+    setContent('')
     closeModal()
   }
 
@@ -58,7 +60,7 @@ const Modal: React.FC<Props> = (props) => {
           <form onSubmit={handleSubmit} className=''>
             <div className='modal_input pl-8 pr-7'>
               <textarea 
-                value={body} 
+                value={content} 
                 name='post'
                 id='post'
                 placeholder={`Share what's on your mind ${'Amr'}...`}
@@ -71,9 +73,9 @@ const Modal: React.FC<Props> = (props) => {
             <div 
               className="modal_footer items-center bottom-0 flex justify-end absolute left-0 py-4 px-5">
               <button 
-                disabled={!body.trim()} 
+                disabled={!content.trim()} 
                 className={
-                `bg-pry text-grey4 py-2 px-7 rounded-lg ${!body.trim() && 'bg-gray-400'}`
+                `bg-pry text-grey4 py-2 px-7 rounded-lg ${!content.trim() && 'bg-gray-400'}`
               }>
                 Post
               </button>

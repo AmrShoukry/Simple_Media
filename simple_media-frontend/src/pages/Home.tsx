@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import Post from '@/features/posts/Post';
-import { deletePost } from '@/features/posts/postSlice';
+// import { getAllPosts } from '@/features/posts/postSlice';
 import Header from '@/components/heading/Header';
 import { getUserAsync } from '@/features/auth/authSlice';
 import Modal from '@/components/ui/modal/Modal';
-
 
 
 interface Props {
@@ -16,7 +15,7 @@ const Home: React.FC<Props> = () => {
 
   const [showModal, setShowModal] = useState(false)
   
-  const posts = useAppSelector(state => state.posts.posts);
+  const posts = useAppSelector(state => state.posts);
 
   const users = useAppSelector(state => state.auth)
 
@@ -27,15 +26,24 @@ const Home: React.FC<Props> = () => {
     setShowModal(prev => !prev)
   }
 
-  const handleDeletePost =(id: string)=> {
-    dispatch(deletePost(id))
-    console.log(id)
+  
+  const handleDeletePost =()=> {
+    // dispatch(deletePost(id))
+    // console.log(id)
   }
-
+  
   useEffect(()=> {
     dispatch(getUserAsync())
   }, [dispatch])
   
+  // useEffect(()=> {
+  //   dispatch(getAllPosts())
+  // },[dispatch])
+
+  // const { data } = posts.posts
+  
+  console.log(posts.posts)
+
   return (
     <div>
       <section className='mx-4 w-full'>
@@ -47,17 +55,26 @@ const Home: React.FC<Props> = () => {
               username={users.user?.data.username as string}
             />}
         <div className='mt-14'>
+          
           <ul className='my-5 '>
-            {
-              posts.map(post => (
+            {/* {
+              posts.posts.map(post => (
+                <Post key={post.id} post={post.content} />
+              ))
+            } */}
+            {/* {users?.isSuccess &&
+              posts?posts.map(post => (
                <Post
-                key={post.id}
-                post={post.body}
+                key={post?.id}
+                post={post?.content}
                 handleDeletePost={handleDeletePost}
                 idx={post.id}
+                firstname={users.user?.data.firstName as string}
+                lastname={users?.user?.data?.lastName as string} 
+                username={users?.user?.data?.username as string}
               />
               ))
-            }
+            } */}
           </ul>
         </div>
       </section>
