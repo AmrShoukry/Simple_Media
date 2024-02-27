@@ -1,10 +1,10 @@
-import React, {useEffect } from 'react';
+import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import SideNav from '../dashboard/SideNav';
 import TopNav from '../dashboard/TopNav';
-import Modal from '../ui/modal/Modal';
-import { useAppSelector, useAppDispatch } from '@/app/hooks';
-import { getUserAsync } from '@/features/auth/authSlice';
+// import Modal from '../ui/modal/Modal';
+import { useAppSelector } from '@/app/hooks';
+// import { getUserAsync } from '@/features/auth/authSlice';
 import './layout.scss'
 
 
@@ -14,17 +14,17 @@ interface Props {
 
 const DashboardLayout: React.FC<Props> = () => {
 
-  const showModal = useAppSelector(state => state.posts.showModal)
+  // const showModal = useAppSelector(state => state.posts.showModal)
 
-  const dispatch = useAppDispatch()
+  // const dispatch = useAppDispatch()
 
   const user = useAppSelector(state => state.auth)
 
   // const navigate = useNavigate()
 
-  useEffect(()=> {
-    dispatch(getUserAsync())
-  }, [dispatch])
+  // useEffect(()=> {
+  //   dispatch(getUserAsync())
+  // }, [dispatch])
 
   if(!user.user) {
     return(
@@ -53,13 +53,13 @@ const DashboardLayout: React.FC<Props> = () => {
           </section>
         </div>
       </main>
-      {showModal && user.isSuccess 
+      {/* {showModal && user.isSuccess 
         && <Modal 
             firstname={user?.user?.data?.firstName as string} 
             lastname={user?.user?.data?.lastName as string} 
             username={user?.user?.data?.username as string} 
           />
-      }
+      } */}
     </>
   );
 }

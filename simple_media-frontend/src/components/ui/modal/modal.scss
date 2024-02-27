@@ -2,9 +2,11 @@
   background-color: rgba(0,0,0,0.45);
   width: 100%;
   position: fixed;
-  z-index: 10;
+  z-index: 100;
   top: 0;
   bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: center;
   align-items: center;
