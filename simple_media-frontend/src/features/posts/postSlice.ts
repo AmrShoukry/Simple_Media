@@ -4,53 +4,18 @@ import postService from "./postService";
 import { PostContent } from "./postService";
 
 
-
 type Posts = {
   id: string;
   content: string;
 }
 
 interface PostState {
-  posts: Posts[];
-  isLoading: boolean,
-  isSuccess: boolean,
-  isError: boolean
+  posts: Posts []
+  // image: string; 
+  isLoading: boolean;
+  isSuccess: boolean;
+  isError: boolean;
 }
-
-// type Items = {
-//   id: string;
-//   content: string;
-//   user?: string;
-// }
-
-// type Data = {
-//   data: Items[]
-// }
-
-// interface PostState {
-//   posts: Posts[];
-//   // content: string;
-//   isLoading: boolean;
-//   isSuccess: boolean;
-//   isError: boolean
-// }
-// interface PostState {
-//   posts: Data;
-//   content: string;
-//   isLoading: boolean;
-//   isSuccess: boolean;
-//   isError: boolean
-// }
-
-// const postState: PostState = {
-//   posts: {
-//     data: []
-//   },
-//   content: '',
-//   isLoading: false,
-//   isSuccess: false,
-//   isError: false
-// }
 
 const postState: PostState = {
   posts: [],
@@ -72,16 +37,16 @@ export const postAsync = createAsyncThunk(
   }
 )
 
-// export const getAllPosts = createAsyncThunk(
-//   'post/getPost',
-//   async()=> {
-//     try {
-//       return await postService.getContent()
-//     } catch(error){
-//       console.log(error)
-//     }
-//   }
-// )
+export const getAllPosts = createAsyncThunk(
+  'post/getPost',
+  async()=> {
+    try {
+      return await postService.getContent()
+    } catch(error){
+      console.log(error)
+    }
+  }
+)
 
 const postSlice = createSlice({
   name: 'post',
@@ -108,7 +73,7 @@ const postSlice = createSlice({
           content: action.payload,
           id: nanoid(4)
         }
-        state.posts.unshift(newPost)
+        state.posts.push(newPost)
         state.isLoading = false,
         state.isSuccess = true
       })
@@ -119,19 +84,19 @@ const postSlice = createSlice({
         // state.content = ''
       })
 
-      // .addCase(getAllPosts.pending, (state: PostState)=> {
-      //   state.isLoading = true
-      // })
-      // .addCase(getAllPosts.fulfilled, (state: PostState, action: PayloadAction<any>)=> {
-      //   state.posts = action.payload,
-      //   state.isLoading = false,
-      //   state.isSuccess = true
-      // })
-      // .addCase(getAllPosts.rejected, (state: PostState, action: PayloadAction<any>)=> {
-      //   state.isLoading = false,
-      //   state.isError = action.payload
-      //   // state.content = ''
-      // })
+      .addCase(getAllPosts.pending, (state: PostState)=> {
+        state.isLoading = true
+      })
+      .addCase(getAllPosts.fulfilled, (state: PostState, action: PayloadAction<any>)=> {
+        state.posts = action.payload,
+        state.isLoading = false,
+        state.isSuccess = true
+      })
+      .addCase(getAllPosts.rejected, (state: PostState, action: PayloadAction<any>)=> {
+        state.isLoading = false,
+        state.isError = action.payload
+        // state.content = ''
+      })
   }
 })
 

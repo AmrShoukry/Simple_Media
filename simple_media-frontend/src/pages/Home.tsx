@@ -57,13 +57,8 @@ const Home: React.FC<Props> = () => {
         <div className='mt-14'>
           
           <ul className='my-5 '>
-            {/* {
-              posts.posts.map(post => (
-                <Post key={post.id} post={post.content} />
-              ))
-            } */}
-            {/* {users?.isSuccess &&
-              posts?posts.map(post => (
+            {users?.isSuccess &&
+              posts?.posts.map(post => (
                <Post
                 key={post?.id}
                 post={post?.content}
@@ -74,7 +69,7 @@ const Home: React.FC<Props> = () => {
                 username={users?.user?.data?.username as string}
               />
               ))
-            } */}
+            }
           </ul>
         </div>
       </section>

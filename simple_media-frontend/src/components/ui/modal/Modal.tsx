@@ -34,7 +34,7 @@ const Modal: React.FC<Props> = (props) => {
       content
     }
     dispatch(postAsync(newPost))
-    console.log(content) 
+    // console.log(newPost) 
     setContent('')
     closeModal()
   }

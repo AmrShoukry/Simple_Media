@@ -17,7 +17,7 @@ const postContent = async(post: PostContent)=> {
       Authorization: `Bearer ${token}`
     }
   })
-  return res.data as PostContent
+  return res.data.data.content
 }
 
 const getContent = async()=> {
