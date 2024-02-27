@@ -2,23 +2,36 @@ import axios from "axios";
 
 
 export type PostContent = {
-  body: string;
+  content: string;
+  id: string;
 }
 
 const API_URL = 'http://localhost:8000';
 
+const token = JSON.parse(localStorage.getItem('user') as string)
+
+
 const postContent = async(post: PostContent)=> {
-  const res = await axios.post(`${API_URL}/posts`, post)
+  const res = await axios.post(`${API_URL}/posts`, post, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return res.data.data.content
+}
 
-  if(res.data){
-    localStorage.setItem('user', JSON.stringify(res.data))
-  }
-
-  return res.data 
+const getContent = async()=> {
+  const res = await axios.get(`${API_URL}/posts`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return res.data
 }
 
 const postService = {
-  postContent
+  postContent,
+  getContent
 }
 
 export default postService

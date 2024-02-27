@@ -1,34 +1,27 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { PayloadAction, createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit";
 import postService from "./postService";
 import { PostContent } from "./postService";
-
-import { uid } from 'uid';
 
 
 type Posts = {
   id: string;
-  body: string;
+  content: string;
 }
 
 interface PostState {
-  posts: Posts[];
-  showModal: boolean;
-  body: string;
+  posts: Posts []
+  // image: string; 
+  isLoading: boolean;
+  isSuccess: boolean;
+  isError: boolean;
 }
 
 const postState: PostState = {
-  posts: [
-    {
-      id: '1',
-      body: 'Sometimes I feel like coding is mentally exhausting'
-    },
-    {
-      id: '2',
-      body: 'Arsenal football club is by the best club, bar none'
-    },
-  ],
-  showModal: false,
-  body: ''
+  posts: [],
+  isLoading: false,
+  isSuccess: false,
+  isError: false
 }
 
 export const postAsync = createAsyncThunk(
@@ -36,9 +29,21 @@ export const postAsync = createAsyncThunk(
   async(post: PostContent, thunkAPI)=> {
     try {
       return await postService.postContent(post)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch(error: any) {
       const message =(error.res && error.res.data && error.res.data.message) || error.message || error.toString()
       return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
+export const getAllPosts = createAsyncThunk(
+  'post/getPost',
+  async()=> {
+    try {
+      return await postService.getContent()
+    } catch(error){
+      console.log(error)
     }
   }
 )
@@ -47,28 +52,54 @@ const postSlice = createSlice({
   name: 'post',
   initialState: postState,
   reducers: {
-    createPost: (state: PostState, action: PayloadAction<string>) => {
-      const newPost = {
-        id: uid(4),
-        body: action.payload
-      }
-      state.posts.unshift(newPost)
-    },
-    toggleModal: (state: PostState)=> {
-      state.showModal = !state.showModal
-    },
-    deletePost: (state: PostState, action: PayloadAction<string>)=> {
-      state.posts = state.posts.filter(post => post.id !== action.payload)
-    }
+    // createPost: (state: PostState, action: PayloadAction<any>) => {
+    //   const newPost = {
+    //     id: uid(4),
+    //     content: action.payload
+    //   }
+    //   state.posts.unshift(newPost)
+    // },
+    // deletePost: (state: PostState, action: PayloadAction<string>)=> {
+    //   state.posts = state.posts.filter(post => post.id !== action.payload)
+    // }
   },
   extraReducers: (builder)=> {
     builder
-      .addCase(postAsync.fulfilled, (state: PostState, action: PayloadAction<string>)=> {
-        state.body = action.payload
+      .addCase(postAsync.pending, (state: PostState)=> {
+        state.isLoading = true
+      })
+      .addCase(postAsync.fulfilled, (state: PostState, action: PayloadAction<any>)=> {
+        const newPost = {
+          content: action.payload,
+          id: nanoid(4)
+        }
+        state.posts.push(newPost)
+        state.isLoading = false,
+        state.isSuccess = true
+      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .addCase(postAsync.rejected, (state: PostState, action: PayloadAction<any>)=> {
+        state.isLoading = false,
+        state.isError = action.payload
+        // state.content = ''
+      })
+
+      .addCase(getAllPosts.pending, (state: PostState)=> {
+        state.isLoading = true
+      })
+      .addCase(getAllPosts.fulfilled, (state: PostState, action: PayloadAction<any>)=> {
+        state.posts = action.payload,
+        state.isLoading = false,
+        state.isSuccess = true
+      })
+      .addCase(getAllPosts.rejected, (state: PostState, action: PayloadAction<any>)=> {
+        state.isLoading = false,
+        state.isError = action.payload
+        // state.content = ''
       })
   }
 })
 
-export const { createPost, toggleModal, deletePost }  = postSlice.actions
+// export const { deletePost }  = postSlice.actions
 
 export default postSlice.reducer

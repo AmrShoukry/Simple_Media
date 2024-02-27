@@ -8,18 +8,21 @@ interface Props {
   post: string;
   handleDeletePost: (id: string)=> void;
   idx: string;
+  firstname: string;
+  lastname: string;
+  username: string;
 }
 
 const Post: React.FC<Props> = (props) => {
 
-  const { post, handleDeletePost, idx} = props;
-
-  return ( 
+  const { post, handleDeletePost, idx, firstname, lastname, username} = props;
+  console.log(post)
+  return (  
     <>
       <li className='w-500 py-4 border bg-white border-solid border-grey5 rounded-md px-6 my-6 font-normal text-gray-500'>
         <div className='flex gap-x-2 items-center'>
-          <Avatar firstname='Sam' lastname='dami' variant='pry' />
-          <span className='capitalize'>@{'Frexz'}</span>
+          <Avatar firstname={firstname} lastname={lastname} variant='pry' />
+          <span className='capitalize'>@{username}</span>
         </div>
         <span className='py-3 pl-12 pr-4 block'>{post}</span>
         

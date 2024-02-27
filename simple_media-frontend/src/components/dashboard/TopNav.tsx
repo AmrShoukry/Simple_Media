@@ -19,7 +19,7 @@ const TopNav: React.FC<Props> = () => {
     dispatch(getUserAsync())
   }, [dispatch])
   
-  console.log(user.user)
+  // console.log(user.user)
 //  console.log(user.isSuccess)
 
   return (
