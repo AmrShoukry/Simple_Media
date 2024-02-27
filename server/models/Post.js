@@ -33,6 +33,10 @@ const postSchema = new Schema({
   },
 });
 
+postSchema.pre("find", function () {
+  this.populate("user likes", "username");
+});
+
 const Post = model("Post", postSchema);
 
 module.exports = Post;

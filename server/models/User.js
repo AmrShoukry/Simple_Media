@@ -120,6 +120,10 @@ userSchema.index({ active: 1, email: 1 });
 userSchema.index({ active: 1, token: 1 });
 userSchema.index({ email: 1, token: 1 });
 
+userSchema.pre("find", function () {
+  this.populate("followers following blockers blocking", "username");
+});
+
 const User = model("User", userSchema);
 
 module.exports = User;
