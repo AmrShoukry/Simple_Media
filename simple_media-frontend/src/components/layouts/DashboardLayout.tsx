@@ -5,7 +5,6 @@ import TopNav from '../dashboard/TopNav';
 import Modal from '../ui/modal/Modal';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import { getUserAsync } from '@/features/auth/authSlice';
-// import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import './layout.scss'
 
 
@@ -54,11 +53,13 @@ const DashboardLayout: React.FC<Props> = () => {
           </section>
         </div>
       </main>
-      {showModal && user.isSuccess && <Modal 
-        firstname={user?.user?.data?.firstName as string} 
-        lastname={user?.user?.data?.lastName as string} 
-        username={user?.user?.data?.username as string} 
-      />}
+      {showModal && user.isSuccess 
+        && <Modal 
+            firstname={user?.user?.data?.firstName as string} 
+            lastname={user?.user?.data?.lastName as string} 
+            username={user?.user?.data?.username as string} 
+          />
+      }
     </>
   );
 }

@@ -14,7 +14,7 @@ const postContent = async(post: PostContent)=> {
     localStorage.setItem('user', JSON.stringify(res.data))
   }
 
-  return res.data
+  return res.data 
 }
 
 const postService = {

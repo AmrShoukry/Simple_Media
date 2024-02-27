@@ -60,7 +60,7 @@ export const getUserAsync = createAsyncThunk(
     try {
       return await authService.getUserData()
     } catch(error) {
-      console.log('error msg')
+      console.log(error)
     }
   }
 )

@@ -18,15 +18,6 @@ type UserData = {
   data?: Data;
 }
 
-// export type UserDetails = {
-//   user: UserData;
-//   data: {
-//     firstName: string;
-//     lastName: string;
-//     email: string;
-//     username: string;
-//   }
-// }
   // "proxy": "http://localhost:8000",
 interface User {
   email: string;
@@ -72,7 +63,8 @@ const forgetPassword = async(userEmail: string)=> {
 const getUserData = async()=> {
   const res = await axios.get(`${API_URL}/me/data`, {
     headers: {
-      Authorization : `Bearer ${JSON.parse(localStorage.getItem('user') as string)}`
+      'Content-Type': 'application/json',
+      'Authorization' : `Bearer ${JSON.parse(localStorage.getItem('user') as string)}`
     }
   })
   return res.data as UserData
