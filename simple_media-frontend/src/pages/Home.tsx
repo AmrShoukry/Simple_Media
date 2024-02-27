@@ -1,10 +1,9 @@
-import React from 'react';
-import { GoPencil } from "react-icons/go";
-import Avatar from '@/components/ui/avatar/Avatar';
+import React, { useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import Post from '@/features/posts/Post';
 import { toggleModal, deletePost } from '@/features/posts/postSlice';
-
+import Header from '@/components/heading/Header';
+import { getUserAsync } from '@/features/auth/authSlice';
 
 
 
@@ -16,6 +15,8 @@ const Home: React.FC<Props> = () => {
   
   const posts = useAppSelector(state => state.posts.posts);
 
+  const users = useAppSelector(state => state.auth)
+
   const dispatch = useAppDispatch()
 
   const handleOpenModal =()=> {
@@ -26,20 +27,20 @@ const Home: React.FC<Props> = () => {
     dispatch(deletePost(id))
     console.log(id)
   }
+
+  useEffect(()=> {
+    dispatch(getUserAsync())
+  }, [dispatch])
   
   return (
     <section className='mx-4 w-full'>
-      <div onClick={handleOpenModal} className='w-500 py-7 cursor-pointer border bg-white border-solid border-grey5 rounded-md relative px-6'>
-        <div className='w-full flex items-center gap-x-5'>
-          <Avatar firstname='Amr' lastname='Shoukry' variant='pry' />
-          <h2 className='text-gray-400 text-2xl'>
-            Share what's on your mind, {'Amr'}...
-          </h2>
-        </div>
-        <span className='absolute right-6 top-11'>
-          <GoPencil  />
-        </span>
-      </div>
+      {users.isSuccess 
+        && <Header 
+            openModal={handleOpenModal} 
+            firstname={users.user?.data.firstName as string}
+            lastname={users.user?.data.lastName as string}
+            username={users.user?.data.username as string}
+          />}
 
       <div className='mt-14'>
         <ul className='my-5 '>

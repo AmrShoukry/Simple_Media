@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import SideNav from '../dashboard/SideNav';
 import TopNav from '../dashboard/TopNav';
 import Modal from '../ui/modal/Modal';
-import { useAppSelector } from '@/app/hooks';
+import { useAppSelector, useAppDispatch } from '@/app/hooks';
+import { getUserAsync } from '@/features/auth/authSlice';
 // import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import './layout.scss'
 
@@ -16,13 +17,17 @@ const DashboardLayout: React.FC<Props> = () => {
 
   const showModal = useAppSelector(state => state.posts.showModal)
 
-  // const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch()
 
-  const user = useAppSelector(state => state.auth.user)
+  const user = useAppSelector(state => state.auth)
 
   // const navigate = useNavigate()
 
-  if(!user) {
+  useEffect(()=> {
+    dispatch(getUserAsync())
+  }, [dispatch])
+
+  if(!user.user) {
     return(
       <div className='w-full h-screen flex items-center justify-center'>
         <div className='text-center'>
@@ -49,7 +54,11 @@ const DashboardLayout: React.FC<Props> = () => {
           </section>
         </div>
       </main>
-      {showModal && <Modal  />}
+      {showModal && user.isSuccess && <Modal 
+        firstname={user?.user?.data?.firstName as string} 
+        lastname={user?.user?.data?.lastName as string} 
+        username={user?.user?.data?.username as string} 
+      />}
     </>
   );
 }

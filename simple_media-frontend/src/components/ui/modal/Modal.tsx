@@ -8,10 +8,14 @@ import { toggleModal, postAsync } from '@/features/posts/postSlice';
 import './modal.scss'
 
 interface Props {
-
+  firstname: string;
+  lastname: string;
+  username: string;
 }
 
-const Modal: React.FC<Props> = () => {
+const Modal: React.FC<Props> = (props) => {
+
+  const { firstname, lastname, username } = props;
 
   const [body, setBody] = useState('')
 
@@ -49,8 +53,12 @@ const Modal: React.FC<Props> = () => {
 
         <section className=''>
           <div className='flex gap-x-3 items-center p-5'>
-            <Avatar firstname='Amr' lastname='Shoukry' variant='pry' />
-            <p className='capitalize text-2xl'>{'Amr'}</p>
+            <Avatar 
+              firstname={firstname} 
+              lastname={lastname}
+              variant='pry' 
+            />
+            <p className='capitalize text-2xl'>{username}</p>
           </div>
 
           <form onSubmit={handleSubmit} className=''>
