@@ -23,7 +23,7 @@ const limiter = rateLimit({
 
 const app = express();
 
-app.enable("trust proxy"); // Enable trust proxy to trust the headers set by the proxy server
+// app.enable("trust proxy"); // Enable trust proxy to trust the headers set by the proxy server
 app.use(cors()); // Enable Cross-Origin Resource Sharing (CORS) to allow cross-origin requests
 app.use(json()); // Parse incoming JSON requests
 app.use(urlencoded({ extended: true })); // Parse incoming URL-encoded requests with extended mode enabled

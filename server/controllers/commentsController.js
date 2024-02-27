@@ -33,6 +33,7 @@ exports.handleCommenting = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     message: "Commented on post successfully",
+    data: newComment,
   });
 });
 
@@ -168,6 +169,7 @@ exports.handleCommentReplying = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     message: "Replied on comment successfully",
+    data: newReply,
   });
 });
 
