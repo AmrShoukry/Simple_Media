@@ -33,7 +33,7 @@ const register = async(userData: UserData)=> {
   const res = await axios.post(`${API_URL}/auth/signup`, userData)
 
   if(res.data){
-    localStorage.setItem('user', JSON.stringify(res.data))
+    localStorage.setItem('user', JSON.stringify(res.data.token))
   }
 
   return res.data
@@ -63,14 +63,11 @@ const forgetPassword = async(userEmail: string)=> {
 const getUserData = async()=> {
   const res = await axios.get(`${API_URL}/me/data`, {
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization' : `Bearer ${JSON.parse(localStorage.getItem('user') as string)}`
+      Authorization : `Bearer ${localStorage.getItem('user')}`
     }
   })
   return res.data as UserData
 }
-
-// const getUserData = async() => {}
 
 const authService = {
   register,
