@@ -3,29 +3,23 @@ import { MdClose } from "react-icons/md";
 import { GoPencil } from "react-icons/go";
 import Avatar from '../avatar/Avatar';
 import { useAppDispatch } from '@/app/hooks';
-import { toggleModal, postAsync } from '@/features/posts/postSlice';
-// import 
+import { postAsync } from '@/features/posts/postSlice';
 import './modal.scss'
 
 interface Props {
   firstname: string;
   lastname: string;
   username: string;
+  closeModal: ()=> void;
 }
 
 const Modal: React.FC<Props> = (props) => {
 
-  const { firstname, lastname, username } = props;
+  const { firstname, lastname, username, closeModal } = props;
 
   const [body, setBody] = useState('')
 
-  // const [token, setToken] = useState()
-
   const dispatch = useAppDispatch()
-
-  const closeModal =()=> {
-    dispatch(toggleModal())
-  }
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBody(e.target.value);

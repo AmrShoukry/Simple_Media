@@ -1,9 +1,9 @@
-import React, {useEffect } from 'react';
+import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import SideNav from '../dashboard/SideNav';
 import TopNav from '../dashboard/TopNav';
 // import Modal from '../ui/modal/Modal';
-import { useAppSelector, useAppDispatch } from '@/app/hooks';
+import { useAppSelector } from '@/app/hooks';
 // import { getUserAsync } from '@/features/auth/authSlice';
 import './layout.scss'
 
