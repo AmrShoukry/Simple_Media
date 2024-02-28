@@ -16,7 +16,7 @@ interface Props {
 const Post: React.FC<Props> = (props) => {
 
   const { post, handleDeletePost, idx, firstname, lastname, username} = props;
-  console.log(post)
+  // console.log(idx)
   return (  
     <>
       <li className='w-500 py-4 border bg-white border-solid border-grey5 rounded-md px-6 my-6 font-normal text-gray-500'>

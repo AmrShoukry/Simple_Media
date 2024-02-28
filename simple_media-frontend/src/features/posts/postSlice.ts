@@ -5,7 +5,7 @@ import { PostContent } from "./postService";
 
 
 type Posts = {
-  id: string;
+  _id: string;
   content: string;
 }
 
@@ -48,6 +48,17 @@ export const getAllPosts = createAsyncThunk(
   }
 )
 
+export const deletePost = createAsyncThunk(
+  'post/deletePost',
+  async(postId: string)=> {
+    try {
+      return postService.deleteContent(postId)
+    } catch(err){
+      console.log(err)
+    }
+  }
+)
+
 const postSlice = createSlice({
   name: 'post',
   initialState: postState,
@@ -71,7 +82,7 @@ const postSlice = createSlice({
       .addCase(postAsync.fulfilled, (state: PostState, action: PayloadAction<any>)=> {
         const newPost = {
           content: action.payload,
-          id: nanoid(4)
+          _id: nanoid(4)
         }
         state.posts.push(newPost)
         state.isLoading = false,
@@ -95,7 +106,19 @@ const postSlice = createSlice({
       .addCase(getAllPosts.rejected, (state: PostState, action: PayloadAction<any>)=> {
         state.isLoading = false,
         state.isError = action.payload
-        // state.content = ''
+      })
+
+      .addCase(deletePost.pending, (state: PostState)=> {
+        state.isLoading = true
+      })
+      .addCase(deletePost.fulfilled, (state: PostState, action: PayloadAction<any>)=> {
+        state.posts = state.posts.filter(post => post._id !== action.payload)
+        state.isLoading = false,
+        state.isSuccess = true
+      })
+      .addCase(deletePost.rejected, (state: PostState, action: PayloadAction<any>)=> {
+        state.isLoading = false,
+        state.isError = action.payload
       })
   }
 })

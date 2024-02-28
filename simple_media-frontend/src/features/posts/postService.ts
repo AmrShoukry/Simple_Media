@@ -29,9 +29,19 @@ const getContent = async()=> {
   return res.data.data
 }
 
+const deleteContent = async(id: string)=> {
+  const res = await axios.delete(`${API_URL}/posts/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return res.data
+}
+
 const postService = {
   postContent,
-  getContent
+  getContent,
+  deleteContent
 }
 
 export default postService
