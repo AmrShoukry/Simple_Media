@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import Post from '@/features/posts/Post';
-// import { getAllPosts } from '@/features/posts/postSlice';
+import { getAllPosts } from '@/features/posts/postSlice';
 import Header from '@/components/heading/Header';
 import { getUserAsync } from '@/features/auth/authSlice';
 import Modal from '@/components/ui/modal/Modal';
@@ -36,9 +36,9 @@ const Home: React.FC<Props> = () => {
     dispatch(getUserAsync())
   }, [dispatch])
   
-  // useEffect(()=> {
-  //   dispatch(getAllPosts())
-  // },[dispatch])
+  useEffect(()=> {
+    dispatch(getAllPosts())
+  },[dispatch])
 
   // const { data } = posts.posts
   
@@ -56,7 +56,7 @@ const Home: React.FC<Props> = () => {
             />}
         <div className='mt-14'>
           
-          <ul className='my-5 '>
+          {/* <ul className='my-5 '>
             {users?.isSuccess &&
               posts?.posts.map(post => (
                <Post
@@ -70,7 +70,7 @@ const Home: React.FC<Props> = () => {
               />
               ))
             }
-          </ul>
+          </ul> */}
         </div>
       </section>
       {showModal && <Modal  firstname={users?.user?.data?.firstName as string} 

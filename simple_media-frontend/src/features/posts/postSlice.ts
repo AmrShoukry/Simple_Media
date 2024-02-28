@@ -18,7 +18,7 @@ interface PostState {
 }
 
 const postState: PostState = {
-  posts: [],
+  posts: [], //JSON.parse(localStorage.getItem('posts')|| '[]'),
   isLoading: false,
   isSuccess: false,
   isError: false
