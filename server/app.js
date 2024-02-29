@@ -15,6 +15,7 @@ const userRouter = require("./routes/userRoutes");
 const postsRouter = require("./routes/postRoutes");
 const commentRouter = require("./routes/commentRoutes");
 const meRouter = require("./routes/meRoutes");
+const paginationRouter = require("./routes/paginationRoutes");
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000,
@@ -40,6 +41,7 @@ app.use("/user/:userId", userRouter);
 app.use("/me", meRouter);
 app.use("/posts", postsRouter);
 app.use("/posts/:postId/comments", commentRouter);
+app.use("/paging", paginationRouter);
 
 app.use("*", (req, res, next) => {
   res.status(500).json({
