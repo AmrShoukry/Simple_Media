@@ -9,7 +9,7 @@ const postSchema = new Schema({
   },
   content: {
     type: String,
-    required: [true, "This post must have a content"],
+    // required: [true, "This post must have a content"],
   },
   image: {
     type: String,

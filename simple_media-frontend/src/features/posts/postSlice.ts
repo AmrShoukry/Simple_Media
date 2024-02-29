@@ -1,17 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PayloadAction, createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit";
+import {
+  PayloadAction,
+  createAsyncThunk,
+  createSlice,
+  nanoid,
+} from "@reduxjs/toolkit";
 import postService from "./postService";
 import { PostContent } from "./postService";
-
 
 type Posts = {
   id: string;
   content: string;
-}
+};
 
 interface PostState {
-  posts: Posts []
-  // image: string; 
+  posts: Posts[];
+  // image: string;
   isLoading: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -21,35 +25,51 @@ const postState: PostState = {
   posts: [],
   isLoading: false,
   isSuccess: false,
-  isError: false
-}
+  isError: false,
+};
 
 export const postAsync = createAsyncThunk(
-  'post/post',
-  async(post: PostContent, thunkAPI)=> {
+  "post/post",
+  async (post: PostContent, thunkAPI) => {
     try {
-      return await postService.postContent(post)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch(error: any) {
-      const message =(error.res && error.res.data && error.res.data.message) || error.message || error.toString()
-      return thunkAPI.rejectWithValue(message)
+      return await postService.postContent(post);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const message =
+        (error.res && error.res.data && error.res.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
     }
   }
-)
+);
 
-export const getAllPosts = createAsyncThunk(
-  'post/getPost',
-  async()=> {
-    try {
-      return await postService.getContent()
-    } catch(error){
-      console.log(error)
-    }
+export const getAllPosts = createAsyncThunk("post/getPost", async () => {
+  try {
+    return await postService.getContent();
+  } catch (error) {
+    console.log(error);
   }
-)
+});
+
+export const deletePost = createAsyncThunk("p", async (id) => {
+  try {
+    return await postService.deletePost(id);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+export const likePost = createAsyncThunk("p", async (userId, postId) => {
+  try {
+    return await postService.likePost(userId, postId);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 const postSlice = createSlice({
-  name: 'post',
+  name: "post",
   initialState: postState,
   reducers: {
     // createPost: (state: PostState, action: PayloadAction<any>) => {
@@ -59,47 +79,57 @@ const postSlice = createSlice({
     //   }
     //   state.posts.unshift(newPost)
     // },
-    // deletePost: (state: PostState, action: PayloadAction<string>)=> {
-    //   state.posts = state.posts.filter(post => post.id !== action.payload)
-    // }
+    // deletePost: (state: PostState, action: PayloadAction<string>) => {
+    //   console.log(action);
+    //   state.posts = state.posts.filter((post) => post.id !== action.payload);
+    // },
   },
-  extraReducers: (builder)=> {
+  extraReducers: (builder) => {
     builder
-      .addCase(postAsync.pending, (state: PostState)=> {
-        state.isLoading = true
+      .addCase(postAsync.pending, (state: PostState) => {
+        state.isLoading = true;
       })
-      .addCase(postAsync.fulfilled, (state: PostState, action: PayloadAction<any>)=> {
-        const newPost = {
-          content: action.payload,
-          id: nanoid(4)
+      .addCase(
+        postAsync.fulfilled,
+        (state: PostState, action: PayloadAction<any>) => {
+          const newPost = {
+            content: action.payload,
+            id: nanoid(4),
+          };
+          state.posts.push(newPost);
+          (state.isLoading = false), (state.isSuccess = true);
         }
-        state.posts.push(newPost)
-        state.isLoading = false,
-        state.isSuccess = true
-      })
+      )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .addCase(postAsync.rejected, (state: PostState, action: PayloadAction<any>)=> {
-        state.isLoading = false,
-        state.isError = action.payload
-        // state.content = ''
-      })
+      .addCase(
+        postAsync.rejected,
+        (state: PostState, action: PayloadAction<any>) => {
+          (state.isLoading = false), (state.isError = action.payload);
+          // state.content = ''
+        }
+      )
 
-      .addCase(getAllPosts.pending, (state: PostState)=> {
-        state.isLoading = true
+      .addCase(getAllPosts.pending, (state: PostState) => {
+        state.isLoading = true;
       })
-      .addCase(getAllPosts.fulfilled, (state: PostState, action: PayloadAction<any>)=> {
-        state.posts = action.payload,
-        state.isLoading = false,
-        state.isSuccess = true
-      })
-      .addCase(getAllPosts.rejected, (state: PostState, action: PayloadAction<any>)=> {
-        state.isLoading = false,
-        state.isError = action.payload
-        // state.content = ''
-      })
-  }
-})
+      .addCase(
+        getAllPosts.fulfilled,
+        (state: PostState, action: PayloadAction<any>) => {
+          (state.posts = action.payload),
+            (state.isLoading = false),
+            (state.isSuccess = true);
+        }
+      )
+      .addCase(
+        getAllPosts.rejected,
+        (state: PostState, action: PayloadAction<any>) => {
+          (state.isLoading = false), (state.isError = action.payload);
+          // state.content = ''
+        }
+      );
+  },
+});
 
-// export const { deletePost }  = postSlice.actions
+// export const { deletePost } = postSlice.actions;
 
-export default postSlice.reducer
+export default postSlice.reducer;

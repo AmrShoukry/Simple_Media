@@ -273,16 +273,24 @@ exports.handleVerifyEmail = catchAsync(async (req, res, next) => {
 exports.checkLogin = catchAsync(async (req, res, next) => {
   let token;
 
+  console.log(req.headers);
+
   if (req.cookies?.jwt) {
     token = req.cookies.jwt;
   } else if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
+    console.log("5555");
+    console.log(req.headers.authorization);
     token = req.headers.authorization.split(" ")[1];
+    console.log(`token=${token}`);
   }
+  console.log(`token=${token}`);
+  console.log(`==============================================================`);
 
   if (!token) {
+    console.log(token);
     return next("DEFINED=You-have-to-login-first 401");
   }
 
