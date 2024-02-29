@@ -1,4 +1,6 @@
+const Comment = require("../models/Comment");
 const Post = require("../models/Post");
+const User = require("../models/User");
 const catchAsync = require("../utils/catchAsync");
 
 exports.getAllPaginatedPosts = catchAsync(async (req, res, next) => {
