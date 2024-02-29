@@ -9,7 +9,7 @@ import postService from "./postService";
 import { PostContent } from "./postService";
 
 type Posts = {
-  id: string;
+  _id: string;
   content: string;
 };
 
@@ -22,7 +22,7 @@ interface PostState {
 }
 
 const postState: PostState = {
-  posts: [],
+  posts: [], //JSON.parse(localStorage.getItem('posts')|| '[]'),
   isLoading: false,
   isSuccess: false,
   isError: false,
