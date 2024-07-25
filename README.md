@@ -28,7 +28,7 @@ Simple Media is a user-friendly social media application designed to provide bas
 
 ### API Documentation
 
-- Postman
+- Postman: [https://documenter.getpostman.com/view/32756375/2sA2r82j2S](url)
 
 ## Installation
 
